@@ -9,12 +9,13 @@
  * @author Morris Jobke <hey@morrisjobke.de>
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
  * @copyright Morris Jobke 2013, 2014
- * @copyright Pauli Järvinen 2016 - 2025
+ * @copyright Pauli Järvinen 2016 - 2026
  */
 
 namespace OCA\Music\BusinessLayer;
 
 use OCA\Music\AppFramework\Core\Logger;
+use OCA\Music\Db\Cache;
 use OCA\Music\Db\Track;
 use OCA\Music\Db\TrackMapper;
 use OCA\Music\Service\FileSystemService;
@@ -28,6 +29,7 @@ class TrackBusinessLayerTest extends \PHPUnit\Framework\TestCase {
 	private $artistId;
 	private $albumId;
 	private $fileId;
+	private $cache;
 
 	protected function setUp() : void {
 		$this->mapper = $this->getMockBuilder(TrackMapper::class)
@@ -39,7 +41,10 @@ class TrackBusinessLayerTest extends \PHPUnit\Framework\TestCase {
 		$this->logger = $this->getMockBuilder(Logger::class)
 			->disableOriginalConstructor()
 			->getMock();
-		$this->trackBusinessLayer = new TrackBusinessLayer($this->mapper, $this->fileSystemService, $this->logger);
+		$this->cache = $this->getMockBuilder(Cache::class)
+			->disableOriginalConstructor()
+			->getMock();
+		$this->trackBusinessLayer = new TrackBusinessLayer($this->mapper, $this->fileSystemService, $this->logger, $this->cache);
 		$this->userId = 'jack';
 		$this->artistId = 3;
 		$this->albumId = 3;

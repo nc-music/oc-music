@@ -17,7 +17,7 @@ namespace OCA\Music\BusinessLayer;
 use OCA\Music\AppFramework\BusinessLayer\BusinessLayer;
 use OCA\Music\AppFramework\BusinessLayer\BusinessLayerException;
 use OCA\Music\AppFramework\Core\Logger;
-
+use OCA\Music\Db\Cache;
 use OCA\Music\Db\MatchMode;
 use OCA\Music\Db\SortBy;
 use OCA\Music\Db\TrackMapper;
@@ -41,11 +41,13 @@ class TrackBusinessLayer extends BusinessLayer implements IScrobbler {
 
 	private FileSystemService $fileSystemService;
 	private Logger $logger;
+	private Cache $cache;
 
-	public function __construct(TrackMapper $trackMapper, FileSystemService $fileSystemService, Logger $logger) {
+	public function __construct(TrackMapper $trackMapper, FileSystemService $fileSystemService, Logger $logger, Cache $cache) {
 		parent::__construct($trackMapper);
 		$this->fileSystemService = $fileSystemService;
 		$this->logger = $logger;
+		$this->cache = $cache;
 	}
 
 	/**
@@ -230,6 +232,69 @@ class TrackBusinessLayer extends BusinessLayer implements IScrobbler {
 		if (!$this->mapper->recordTrackPlayed($trackId, $userId, $timeOfPlay)) {
 			throw new BusinessLayerException("Track with ID $trackId was not found");
 		}
+
+		// Update also "now playing" if the client hasn't updated it separately
+		try {
+			$nowPlaying = $this->getNowPlaying($userId);
+		} catch (BusinessLayerException $e) {
+			// malformed data, we can overwrite it no problem
+			$nowPlaying = null;
+		}
+
+		if ($nowPlaying !== null) {
+			$track = $nowPlaying['track'];
+			$nowPlayingTimestamp = $nowPlaying['timeOfPlay'];
+
+			// prevent the same track from getting an updated timestamp until the track is played through
+			if ($track->getId() === $trackId && $timeOfPlay->getTimestamp() - $nowPlayingTimestamp < $track->getLength()) {
+				return;
+			}
+
+			// rate-limit updates of now playing track when calling from recordTrackPlayed
+			if ($timeOfPlay->getTimestamp() < $nowPlayingTimestamp + 3) {
+				return;
+			}
+		}
+
+		$this->setNowPlaying($trackId, $userId, $timeOfPlay);
+	}
+
+	/**
+	 * Save the track to config as the "now playing" track with the provided timestamp
+	 */
+	public function setNowPlaying(int $trackId, string $userId, ?\DateTime $timeOfPlay = null) : void {
+		$this->find($trackId, $userId);
+		$data = [
+			'trackId' => $trackId,
+			'timeOfPlay' => ($timeOfPlay ?? new \DateTime())->getTimestamp()
+		];
+		$this->cache->set($userId, 'nowPlaying', \json_encode($data));
+	}
+
+	/**
+	 * Return the "now playing" track along with its time of play
+	 * @return ?array{track: Track, timeOfPlay: int} - null if no data available
+	 * @throws BusinessLayerException if data available but somehow incorrect
+	 */
+	public function getNowPlaying(string $userId) : ?array {
+		$rawData = $this->cache->get($userId, 'nowPlaying');
+		if ($rawData === null) {
+			return null;
+		}
+
+		$nowPlayingData = \json_decode($rawData, true);
+		if (!isset($nowPlayingData['trackId'], $nowPlayingData['timeOfPlay'])) {
+			throw new BusinessLayerException('Malformed now playing data');
+		}
+
+		[$trackId, $timeOfPlay] = ArrayUtil::multiGet($nowPlayingData, ['trackId', 'timeOfPlay']);
+
+		$track = $this->find($trackId, $userId);
+
+		return [
+			'track' => $track,
+			'timeOfPlay' => $timeOfPlay
+		];
 	}
 
 	/**

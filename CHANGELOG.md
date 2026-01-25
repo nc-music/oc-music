@@ -3,6 +3,11 @@
 ### Added
 - Support for ownCloud 11 (tested on 11.0.0-prealpha)
 
+### Changed
+- Subsonic API:
+  * Set the "now playing" data locally and in the connected Last.fm account when the client calls `scrobble` with `submission=false`
+    [#112](https://github.com/nc-music/music/pull/112) @mattwellss
+
 ### Fixed
 - Deprecation warnings printed on PHP 8.3+ while executing the Music background tasks
 - Web UI trying to load an invalid image URL upon page load

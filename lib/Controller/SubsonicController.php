@@ -68,6 +68,7 @@ use OCA\Music\Service\Scrobbling\IScrobbler;
 
 use OCA\Music\Utility\AppInfo;
 use OCA\Music\Utility\ArrayUtil;
+use OCA\Music\Utility\Concurrency;
 use OCA\Music\Utility\HttpUtil;
 use OCA\Music\Utility\Random;
 use OCA\Music\Utility\StringUtil;
@@ -101,6 +102,7 @@ class SubsonicController extends ApiController {
 	private Logger $logger;
 	private IConfig $configManager;
 	private IScrobbler $scrobbler;
+	private Concurrency $concurrency;
 	private ?string $userId;
 	private ?int $keyId;
 	private array $ignoredArticles;
@@ -132,7 +134,8 @@ class SubsonicController extends ApiController {
 			Random $random,
 			Logger $logger,
 			\OCP\IConfig $configManager,
-			IScrobbler $scrobbler
+			IScrobbler $scrobbler,
+			Concurrency $concurrency
 	) {
 		parent::__construct($appName, $request, 'POST, GET', 'Authorization, Content-Type, Accept, X-Requested-With');
 
@@ -159,6 +162,7 @@ class SubsonicController extends ApiController {
 		$this->logger = $logger;
 		$this->configManager = $configManager;
 		$this->scrobbler = $scrobbler;
+		$this->concurrency = $concurrency;
 		$this->userId = null;
 		$this->keyId = null;
 		$this->ignoredArticles = [];
@@ -817,17 +821,16 @@ class SubsonicController extends ApiController {
 	 * @SubsonicAPI
 	 */
 	protected function scrobble(array $id, array $time, bool $submission = true) : array {
-		// suppress non-submission scrobbles: we retrieve the nowPlaying track from recent plays
-		// todo: track "now playing" separately
-		if (!$submission) {
-			return [];
-		}
-
 		if (\count($id) === 0) {
 			throw new SubsonicException("Required parameter 'id' missing", 10);
 		}
 
 		$userId = $this->user();
+
+		// Some clients make multiple calls to this method in so rapid succession that they get executed
+		// in parallel. Enforce serial execution of the critical section.
+		$mutex = $this->concurrency->mutexReserve($userId, 'scrobble');
+
 		foreach ($id as $index => $aId) {
 			list($type, $trackId) = self::parseEntityId($aId);
 			if ($type === 'track') {
@@ -837,9 +840,15 @@ class SubsonicController extends ApiController {
 				} else {
 					$timeOfPlay = null;
 				}
-				$this->scrobbler->recordTrackPlayed((int)$trackId, $userId, $timeOfPlay);
+				if ($submission) {
+					$this->scrobbler->recordTrackPlayed((int)$trackId, $userId, $timeOfPlay);
+				} else {
+					$this->scrobbler->setNowPlaying((int)$trackId, $userId, $timeOfPlay);
+				}
 			}
 		}
+
+		$this->concurrency->mutexRelease($mutex);
 
 		return [];
 	}
@@ -1208,18 +1217,21 @@ class SubsonicController extends ApiController {
 	protected function getNowPlaying() : array {
 		// Note: This is documented to return latest play of all users on the server but we don't want to
 		// provide access to other people's data => Always return just this user's data.
-		$recent = $this->trackBusinessLayer->findRecentPlay($this->user(), 1);
-
-		if (!empty($recent)) {
-			$playTime = new \DateTime($recent[0]->getLastPlayed());
-			$now = new \DateTime();
-			$recent = $this->tracksToApi($recent);
-			$recent[0]['username'] = $this->user();
-			$recent[0]['minutesAgo'] = (int)(($now->getTimestamp() - $playTime->getTimestamp()) / 60);
-			$recent[0]['playerId'] = 0; // dummy
+		$apiTrack = [];
+		try {
+			$nowPlaying = $this->trackBusinessLayer->getNowPlaying($this->user());
+			if ($nowPlaying !== null) {;
+				$now = new \DateTime();
+				$apiTrack = $this->trackToApi($nowPlaying['track']);
+				$apiTrack['username'] = $this->user();
+				$apiTrack['minutesAgo'] = (int)(($now->getTimestamp() - $nowPlaying['timeOfPlay']) / 60);
+				$apiTrack['playerId'] = 0; // dummy
+			}
+		} catch (BusinessLayerException $e) {
+			$this->logger->warning($e->getMessage());
 		}
 
-		return ['nowPlaying' => ['entry' => $recent]];
+		return ['nowPlaying' => ['entry' => [$apiTrack]]];
 	}
 
 	/**

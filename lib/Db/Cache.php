@@ -28,11 +28,14 @@ class Cache {
 	 * @param string $userId
 	 * @param string $key
 	 * @param string $data
+	 * @return int ID of the added row
+	 * @throws UniqueConstraintViolationException
 	 */
-	public function add(string $userId, string $key, string $data) : void {
+	public function add(string $userId, string $key, string $data) : int {
 		$sql = 'INSERT INTO `*PREFIX*music_cache`
 				(`user_id`, `key`, `data`) VALUES (?, ?, ?)';
 		$this->executeUpdate($sql, [$userId, $key, $data]);
+		return $this->db->lastInsertId('*PREFIX*music_cache');
 	}
 
 	/**
@@ -132,6 +135,32 @@ class Cache {
 		$result->closeCursor();
 
 		return \count($rows) ? $rows[0]['user_id'] : null;
+	}
+
+	public function getId(string $userId, string $key) : ?int {
+		$sql = 'SELECT `id` FROM `*PREFIX*music_cache`
+				WHERE `user_id` = ? AND `key` = ?';
+		$result = $this->db->executeQuery($sql, [$userId, $key]);
+		$rows = $result->fetchAll();
+		$result->closeCursor();
+
+		return \count($rows) ? (int)$rows[0]['id'] : null;
+	}
+
+	/**
+	 * Get ID of an existing entry, creating a new empty entry if one doesn't exist
+	 */
+	public function forcedGetId(string $userId, string $key) : int {
+		$id = $this->getId($userId, $key);
+		if ($id === null) {
+			try {
+				$id = $this->add($userId, $key, '');
+			} catch (UniqueConstraintViolationException $e) {
+				// with a really bad luck, the item didn't exist an eyeblick ago but now it does
+				$id = (int)$this->getId($userId, $key);
+			}
+		}
+		return $id;
 	}
 
 	private function executeUpdate(string $sql, array $params) : int {
