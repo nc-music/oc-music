@@ -131,25 +131,32 @@ class ExternalScrobbler implements IScrobbler {
 			return;
 		}
 
+		$timestamp = $timeOfPlay->getTimestamp();
+		$track = $this->trackBusinessLayer->find($trackId, $userId);
+
+		// Last.fm's docs say a track must be >30 seconds in order to scrobble
+		// This scrobbler uses the Last.fm Scrobbler 2.0 spec, so we follow that rule
+		// https://www.last.fm/api/scrobbling#when-is-a-scrobble-a-scrobble
+		if ($track->getLength() <= 30) {
+			return;
+		}
+
 		$scrobbleData = [
 			'sk' => $sessionKey
 		];
 
-		$timestamp = $timeOfPlay->getTimestamp();
-		/** @var array<Track> $tracks */
-		$tracks = $this->trackBusinessLayer->findById([$trackId], $userId);
-		$this->albumBusinessLayer->injectAlbumsToTracks($tracks, $userId);
-		foreach ($tracks as $i => $track) {
-			$trackData = $this->generateTrackData($track);
-			if (isset($trackData['albumArtist'])) {
-				$scrobbleData["albumArtist[{$i}]"] = $trackData['albumArtist'];
-			}
-			$scrobbleData["artist[{$i}]"] = $trackData['artist'];
-			$scrobbleData["track[{$i}]"] = $trackData['track'];
-			$scrobbleData["timestamp[{$i}]"] = $timestamp;
-			$scrobbleData["album[{$i}]"] = $trackData['album'];
-			$scrobbleData["trackNumber[{$i}]"] = $trackData['trackNumber'];
+		$this->albumBusinessLayer->injectAlbumsToTracks([$track], $userId);
+
+		$trackData = $this->generateTrackData($track);
+
+		if (isset($trackData['albumArtist'])) {
+			$scrobbleData["albumArtist[0]"] = $trackData['albumArtist'];
 		}
+		$scrobbleData["artist[0]"] = $trackData['artist'];
+		$scrobbleData["track[0]"] = $trackData['track'];
+		$scrobbleData["timestamp[0]"] = $timestamp;
+		$scrobbleData["album[0]"] = $trackData['album'];
+		$scrobbleData["trackNumber[0]"] = $trackData['trackNumber'];
 
 		$xml = $this->execRequest($this->generateMethodParams('track.scrobble', $scrobbleData));
 

@@ -7,6 +7,8 @@
 - Subsonic API:
   * Set the "now playing" data locally and in the connected Last.fm account when the client calls `scrobble` with `submission=false`
     [#112](https://github.com/nc-music/music/pull/112) @mattwellss
+- Don't scrobble songs shorter than 30 seconds to Last.fm to comply with the service's guideline
+  [#116](https://github.com/nc-music/music/pull/116) @mattwellss
 
 ### Fixed
 - Deprecation warnings printed on PHP 8.3+ while executing the Music background tasks
