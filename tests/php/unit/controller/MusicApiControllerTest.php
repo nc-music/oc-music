@@ -14,7 +14,7 @@
 
 namespace OCA\Music\Controller;
 
-use OCA\Music\Service\IScrobbler;
+use OCA\Music\Service\Scrobbling\IScrobbler;
 use OCA\Music\Tests\Utility\ControllerTestUtility;
 use OCP\AppFramework\Http\JSONResponse;
 

@@ -12,7 +12,7 @@
  * @copyright Pauli Järvinen 2026
  */
 
-namespace OCA\Music\Service;
+namespace OCA\Music\Service\Scrobbling;
 
 interface IScrobbler {
 	public function recordTrackPlayed(int $trackId, string $userId, ?\DateTime $timeOfPlay = null) : void;

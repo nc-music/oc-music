@@ -23,7 +23,7 @@ use OCA\Music\Db\SortBy;
 use OCA\Music\Db\TrackMapper;
 use OCA\Music\Db\Track;
 use OCA\Music\Service\FileSystemService;
-use OCA\Music\Service\IScrobbler;
+use OCA\Music\Service\Scrobbling\IScrobbler;
 use OCA\Music\Utility\ArrayUtil;
 use OCA\Music\Utility\StringUtil;
 

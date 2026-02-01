@@ -14,8 +14,8 @@
 
 namespace OCA\Music\Controller;
 
-use OCA\Music\Service\ScrobbleServiceException;
-use OCA\Music\Service\ExternalScrobbler;
+use OCA\Music\Service\Scrobbling\ExternalScrobbler;
+use OCA\Music\Service\Scrobbling\ScrobbleServiceException;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\AppFramework\Http\TemplateResponse;

@@ -10,7 +10,7 @@
  * @copyright Matthew Wells 2025
  */
 
-namespace OCA\Music\Service;
+namespace OCA\Music\Service\Scrobbling;
 
 class ScrobbleServiceException extends \Exception {
 }

@@ -32,10 +32,10 @@ use OCA\Music\Service\CollectionService;
 use OCA\Music\Service\CoverService;
 use OCA\Music\Service\DetailsService;
 use OCA\Music\Service\FileSystemService;
-use OCA\Music\Service\IScrobbler;
 use OCA\Music\Service\LastfmService;
 use OCA\Music\Service\LibrarySettings;
 use OCA\Music\Service\Scanner;
+use OCA\Music\Service\Scrobbling\IScrobbler;
 use OCA\Music\Utility\HttpUtil;
 use OCA\Music\Utility\Util;
 

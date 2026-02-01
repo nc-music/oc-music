@@ -20,13 +20,12 @@ use OCA\Music\BusinessLayer\TrackBusinessLayer;
 use OCA\Music\Hooks\FileHooks;
 use OCA\Music\Hooks\ShareHooks;
 use OCA\Music\Hooks\UserHooks;
-
 use OCA\Music\Middleware\AmpacheMiddleware;
 use OCA\Music\Middleware\SubsonicMiddleware;
+use OCA\Music\Service\Scrobbling\AggregateScrobbler;
+use OCA\Music\Service\Scrobbling\ExternalScrobbler;
+use OCA\Music\Service\Scrobbling\IScrobbler;
 
-use OCA\Music\Service\AggregateScrobbler;
-use OCA\Music\Service\ExternalScrobbler;
-use OCA\Music\Service\IScrobbler;
 use OCP\AppFramework\App;
 use OCP\AppFramework\IAppContainer;
 use OCP\Files\IMimeTypeLoader;

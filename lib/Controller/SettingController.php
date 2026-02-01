@@ -9,12 +9,11 @@
  * @author Morris Jobke <hey@morrisjobke.de>
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
  * @copyright Morris Jobke 2013, 2014
- * @copyright Pauli Järvinen 2017 - 2025
+ * @copyright Pauli Järvinen 2017 - 2026
  */
 
 namespace OCA\Music\Controller;
 
-use OCA\Music\Service\ExternalScrobbler;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\JSONResponse;
@@ -30,6 +29,7 @@ use OCA\Music\Service\LibrarySettings;
 use OCA\Music\Service\Scanner;
 use OCA\Music\Utility\AppInfo;
 use OCA\Music\Utility\StringUtil;
+use OCA\Music\Service\Scrobbling\ExternalScrobbler;
 
 class SettingController extends Controller {
 	private const DEFAULT_PASSWORD_LENGTH = 10;
