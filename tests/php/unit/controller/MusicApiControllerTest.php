@@ -9,12 +9,12 @@
  * @author Morris Jobke <hey@morrisjobke.de>
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
  * @copyright Morris Jobke 2013, 2014
- * @copyright Pauli Järvinen 2016 - 2025
+ * @copyright Pauli Järvinen 2016 - 2026
  */
 
 namespace OCA\Music\Controller;
 
-use OCA\Music\Service\Scrobbler;
+use OCA\Music\Service\IScrobbler;
 use OCA\Music\Tests\Utility\ControllerTestUtility;
 use OCP\AppFramework\Http\JSONResponse;
 
@@ -89,7 +89,7 @@ class MusicApiControllerTest extends ControllerTestUtility {
 			$this->librarySettings,
 			$this->userId,
 			$this->logger,
-			$this->createMock(Scrobbler::class)
+			$this->createMock(IScrobbler::class)
 		);
 	}
 

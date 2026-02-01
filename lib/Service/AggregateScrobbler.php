@@ -14,8 +14,8 @@ namespace OCA\Music\Service;
 
 use DateTime;
 
-class AggregateScrobbler implements Scrobbler {
-	/** @var array<Scrobbler> $scrobblers */
+class AggregateScrobbler implements IScrobbler {
+	/** @var array<IScrobbler> $scrobblers */
 	private array $scrobblers;
 
 	public function __construct(array $scrobblers) {

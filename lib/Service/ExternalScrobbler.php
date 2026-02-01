@@ -7,7 +7,9 @@
  * later. See the COPYING file.
  *
  * @author Matthew Wells
+ * @author Pauli Järvinen <pauli.jarvine@gmail.co>
  * @copyright Matthew Wells 2025
+ * @copyright Pauli Järvinen 2026
  */
 
 namespace OCA\Music\Service;
@@ -21,7 +23,7 @@ use OCP\IConfig;
 use OCP\IURLGenerator;
 use OCP\Security\ICrypto;
 
-class ExternalScrobbler implements Scrobbler {
+class ExternalScrobbler implements IScrobbler {
 	private IConfig $config;
 	private Logger $logger;
 	private IURLGenerator $urlGenerator;

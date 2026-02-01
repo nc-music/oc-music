@@ -14,7 +14,6 @@
 
 namespace OCA\Music\Controller;
 
-use OCA\Music\Service\Scrobbler;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataDisplayResponse;
@@ -33,6 +32,7 @@ use OCA\Music\Service\CollectionService;
 use OCA\Music\Service\CoverService;
 use OCA\Music\Service\DetailsService;
 use OCA\Music\Service\FileSystemService;
+use OCA\Music\Service\IScrobbler;
 use OCA\Music\Service\LastfmService;
 use OCA\Music\Service\LibrarySettings;
 use OCA\Music\Service\Scanner;
@@ -53,7 +53,7 @@ class MusicApiController extends Controller {
 	private LibrarySettings $librarySettings;
 	private string $userId;
 	private Logger $logger;
-	private Scrobbler $scrobbler;
+	private IScrobbler $scrobbler;
 
 	public function __construct(
 			string $appName,
@@ -70,7 +70,7 @@ class MusicApiController extends Controller {
 			LibrarySettings $librarySettings,
 			?string $userId,
 			Logger $logger,
-			Scrobbler $scrobbler
+			IScrobbler $scrobbler
 	) {
 		parent::__construct($appName, $request);
 		$this->trackBusinessLayer = $trackBusinessLayer;

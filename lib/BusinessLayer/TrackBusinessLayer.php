@@ -23,7 +23,7 @@ use OCA\Music\Db\SortBy;
 use OCA\Music\Db\TrackMapper;
 use OCA\Music\Db\Track;
 use OCA\Music\Service\FileSystemService;
-use OCA\Music\Service\Scrobbler;
+use OCA\Music\Service\IScrobbler;
 use OCA\Music\Utility\ArrayUtil;
 use OCA\Music\Utility\StringUtil;
 
@@ -37,7 +37,7 @@ use OCP\AppFramework\Db\DoesNotExistException;
  * @property TrackMapper $mapper
  * @extends BusinessLayer<Track>
  */
-class TrackBusinessLayer extends BusinessLayer implements Scrobbler {
+class TrackBusinessLayer extends BusinessLayer implements IScrobbler {
 
 	private FileSystemService $fileSystemService;
 	private Logger $logger;

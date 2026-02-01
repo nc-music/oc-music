@@ -12,7 +12,6 @@
 
 namespace OCA\Music\Controller;
 
-use OCA\Music\Service\Scrobbler;
 use OCP\AppFramework\ApiController;
 use OCP\AppFramework\Http\DataDisplayResponse;
 use OCP\AppFramework\Http\JSONResponse;
@@ -62,6 +61,7 @@ use OCA\Music\Service\AmpacheImageService;
 use OCA\Music\Service\CoverService;
 use OCA\Music\Service\DetailsService;
 use OCA\Music\Service\FileSystemService;
+use OCA\Music\Service\IScrobbler;
 use OCA\Music\Service\LastfmService;
 use OCA\Music\Service\LibrarySettings;
 use OCA\Music\Service\PodcastService;
@@ -100,7 +100,7 @@ class SubsonicController extends ApiController {
 	private Random $random;
 	private Logger $logger;
 	private IConfig $configManager;
-	private Scrobbler $scrobbler;
+	private IScrobbler $scrobbler;
 	private ?string $userId;
 	private ?int $keyId;
 	private array $ignoredArticles;
@@ -132,7 +132,7 @@ class SubsonicController extends ApiController {
 			Random $random,
 			Logger $logger,
 			\OCP\IConfig $configManager,
-			Scrobbler $scrobbler
+			IScrobbler $scrobbler
 	) {
 		parent::__construct($appName, $request, 'POST, GET', 'Authorization, Content-Type, Accept, X-Requested-With');
 
