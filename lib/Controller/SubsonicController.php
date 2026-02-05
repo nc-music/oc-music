@@ -825,15 +825,29 @@ class SubsonicController extends ApiController {
 			throw new SubsonicException("Required parameter 'id' missing", 10);
 		}
 
+		// Silently omit IDs other than track IDs (likely podcast episode IDs), as we don't support recording anything else as played
+		$parsedIds = \array_map(fn($aId) => self::parseEntityId($aId), $id);
+		$trackIds = \array_map(
+			fn ($entry) => $entry[1],
+			\array_filter($parsedIds, fn ($parsedId) => $parsedId[0] === 'track')
+		);
+
 		$userId = $this->user();
+		$tracks = $this->trackBusinessLayer->findById($trackIds, $userId, /*preserveOrder=*/ true);
+
+		// All the requested track IDs must be valid or we don't scrobble anything
+		if (\count($tracks) !== \count($trackIds)) {
+			$foundTrackIds = ArrayUtil::extractIds($tracks);
+			$invalidTrackIds = ArrayUtil::diff($trackIds, $foundTrackIds);
+			throw new SubsonicException('Track(s) with ID not found: ' . \json_encode($invalidTrackIds));
+		}
 
 		// Some clients make multiple calls to this method in so rapid succession that they get executed
 		// in parallel. Enforce serial execution of the critical section.
 		$mutex = $this->concurrency->mutexReserve($userId, 'scrobble');
 
-		foreach ($id as $index => $aId) {
-			list($type, $trackId) = self::parseEntityId($aId);
-			if ($type === 'track') {
+		try {
+			foreach ($tracks as $index => $track) {
 				if (isset($time[$index])) {
 					$timestamp = \substr($time[$index], 0, -3); // cut down from milliseconds to seconds
 					$timeOfPlay = new \DateTime('@' . $timestamp);
@@ -841,11 +855,16 @@ class SubsonicController extends ApiController {
 					$timeOfPlay = null;
 				}
 				if ($submission) {
-					$this->scrobbler->recordTrackPlayed((int)$trackId, $userId, $timeOfPlay);
+					$this->scrobbler->recordTrackPlayed($track, $timeOfPlay);
 				} else {
-					$this->scrobbler->setNowPlaying((int)$trackId, $userId, $timeOfPlay);
+					$this->scrobbler->setNowPlaying($track, $timeOfPlay);
 				}
 			}
+		} catch (\Exception $ex) {
+			// We don't expect anything to actually throw within the `try` block, but it's added just
+			// in case so that we don't get a dead-lock in case the unexpected happens (although the
+			// semaphore auto-release should prevent the dead-lock anyway).
+			$this->logger->error('Unexpected exception: ' . $ex->getMessage());
 		}
 
 		$this->concurrency->mutexRelease($mutex);

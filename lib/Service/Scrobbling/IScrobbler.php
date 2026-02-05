@@ -14,7 +14,9 @@
 
 namespace OCA\Music\Service\Scrobbling;
 
+use OCA\Music\Db\Track;
+
 interface IScrobbler {
-	public function recordTrackPlayed(int $trackId, string $userId, ?\DateTime $timeOfPlay = null) : void;
-	public function setNowPlaying(int $trackId, string $userId, ?\DateTime $timeOfPlay = null) : void;
+	public function recordTrackPlayed(Track $track, ?\DateTime $timeOfPlay = null) : void;
+	public function setNowPlaying(Track $track, ?\DateTime $timeOfPlay = null) : void;
 }

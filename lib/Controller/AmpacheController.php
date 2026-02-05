@@ -1443,7 +1443,8 @@ class AmpacheController extends ApiController {
 	 */
 	protected function record_play(int $id, ?int $date) : array {
 		$timeOfPlay = ($date === null) ? null : new \DateTime('@' . $date);
-		$this->scrobbler->recordTrackPlayed($id, $this->userId(), $timeOfPlay);
+		$track = $this->trackBusinessLayer->find($id, $this->userId());
+		$this->scrobbler->recordTrackPlayed($track, $timeOfPlay);
 		return ['success' => 'play recorded'];
 	}
 

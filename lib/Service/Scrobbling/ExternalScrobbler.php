@@ -17,7 +17,6 @@ namespace OCA\Music\Service\Scrobbling;
 use DateTime;
 use OCA\Music\AppFramework\Core\Logger;
 use OCA\Music\BusinessLayer\AlbumBusinessLayer;
-use OCA\Music\BusinessLayer\TrackBusinessLayer;
 use OCA\Music\Db\Track;
 use OCP\IConfig;
 use OCP\IURLGenerator;
@@ -27,7 +26,6 @@ class ExternalScrobbler implements IScrobbler {
 	private IConfig $config;
 	private Logger $logger;
 	private IURLGenerator $urlGenerator;
-	private TrackBusinessLayer $trackBusinessLayer;
 	private AlbumBusinessLayer $albumBusinessLayer;
 	private ICrypto $crypto;
 	private string $name;
@@ -40,7 +38,6 @@ class ExternalScrobbler implements IScrobbler {
 		IConfig $config,
 		Logger $logger,
 		IURLGenerator $urlGenerator,
-		TrackBusinessLayer $trackBusinessLayer,
 		AlbumBusinessLayer $albumBusinessLayer,
 		ICrypto $crypto,
 		string $name,
@@ -52,7 +49,6 @@ class ExternalScrobbler implements IScrobbler {
 		$this->config = $config;
 		$this->logger = $logger;
 		$this->urlGenerator = $urlGenerator;
-		$this->trackBusinessLayer = $trackBusinessLayer;
 		$this->albumBusinessLayer = $albumBusinessLayer;
 		$this->crypto = $crypto;
 		$this->name = $name;
@@ -124,15 +120,15 @@ class ExternalScrobbler implements IScrobbler {
 		return $this->config->getSystemValue('music.' . $this->identifier . '_api_secret', null);
 	}
 
-	public function recordTrackPlayed(int $trackId, string $userId, ?\DateTime $timeOfPlay = null) : void {
+	public function recordTrackPlayed(Track $track, ?\DateTime $timeOfPlay = null) : void {
 		$timeOfPlay = $timeOfPlay ?? new \DateTime();
+		$userId = $track->getUserId();
 		$sessionKey = $this->getApiSession($userId);
 		if (!$sessionKey) {
 			return;
 		}
 
 		$timestamp = $timeOfPlay->getTimestamp();
-		$track = $this->trackBusinessLayer->find($trackId, $userId);
 
 		// Last.fm's docs say a track must be >30 seconds in order to scrobble
 		// This scrobbler uses the Last.fm Scrobbler 2.0 spec, so we follow that rule
@@ -165,15 +161,15 @@ class ExternalScrobbler implements IScrobbler {
 		}
 	}
 
-	public function setNowPlaying(int $trackId, string $userId, ?DateTime $timeOfPlay = null): void
+	public function setNowPlaying(Track $track, ?DateTime $timeOfPlay = null): void
 	{
 		$timeOfPlay = $timeOfPlay ?? new \DateTime();
+		$userId = $track->getUserId();
 		$sessionKey = $this->getApiSession($userId);
 		if (!$sessionKey) {
 			return;
 		}
 
-		$track = $this->trackBusinessLayer->find($trackId, $userId);
 		$this->albumBusinessLayer->injectAlbumsToTracks([$track], $userId);
 		$scrobbleData = \array_merge([
 			'sk' => $sessionKey,

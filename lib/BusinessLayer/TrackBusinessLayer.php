@@ -226,11 +226,13 @@ class TrackBusinessLayer extends BusinessLayer implements IScrobbler {
 	/**
 	 * Update "last played" timestamp and increment the total play count of the track.
 	 */
-	public function recordTrackPlayed(int $trackId, string $userId, ?\DateTime $timeOfPlay = null) : void {
+	public function recordTrackPlayed(Track $track, ?\DateTime $timeOfPlay = null) : void {
 		$timeOfPlay = $timeOfPlay ?? new \DateTime();
+		$userId = $track->getUserId();
 
-		if (!$this->mapper->recordTrackPlayed($trackId, $userId, $timeOfPlay)) {
-			throw new BusinessLayerException("Track with ID $trackId was not found");
+		if (!$this->mapper->recordTrackPlayed($track->getId(), $userId, $timeOfPlay)) {
+			// failing to update the play count would be unexpected as the caller has already obtained the Track from the DB
+			$this->logger->error("Could not record track with ID {$track->getId()} as played");
 		}
 
 		// Update also "now playing" if the client hasn't updated it separately
@@ -242,11 +244,11 @@ class TrackBusinessLayer extends BusinessLayer implements IScrobbler {
 		}
 
 		if ($nowPlaying !== null) {
-			$track = $nowPlaying['track'];
+			$nowPlayingTrack = $nowPlaying['track'];
 			$nowPlayingTimestamp = $nowPlaying['timeOfPlay'];
 
 			// prevent the same track from getting an updated timestamp until the track is played through
-			if ($track->getId() === $trackId && $timeOfPlay->getTimestamp() - $nowPlayingTimestamp < $track->getLength()) {
+			if ($nowPlayingTrack->getId() === $track->getId() && $timeOfPlay->getTimestamp() - $nowPlayingTimestamp < $track->getLength()) {
 				return;
 			}
 
@@ -256,19 +258,18 @@ class TrackBusinessLayer extends BusinessLayer implements IScrobbler {
 			}
 		}
 
-		$this->setNowPlaying($trackId, $userId, $timeOfPlay);
+		$this->setNowPlaying($track, $timeOfPlay);
 	}
 
 	/**
 	 * Save the track to config as the "now playing" track with the provided timestamp
 	 */
-	public function setNowPlaying(int $trackId, string $userId, ?\DateTime $timeOfPlay = null) : void {
-		$this->find($trackId, $userId);
+	public function setNowPlaying(Track $track, ?\DateTime $timeOfPlay = null) : void {
 		$data = [
-			'trackId' => $trackId,
+			'trackId' => $track->getId(),
 			'timeOfPlay' => ($timeOfPlay ?? new \DateTime())->getTimestamp()
 		];
-		$this->cache->set($userId, 'nowPlaying', \json_encode($data));
+		$this->cache->set($track->getUserId(), 'nowPlaying', \json_encode($data));
 	}
 
 	/**

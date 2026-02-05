@@ -326,7 +326,8 @@ class MusicApiController extends Controller {
 	 */
 	public function scrobble(int $trackId) : JSONResponse {
 		try {
-			$this->scrobbler->recordTrackPlayed($trackId, $this->userId);
+			$track = $this->trackBusinessLayer->find($trackId, $this->userId);
+			$this->scrobbler->recordTrackPlayed($track);
 			return new JSONResponse(['success' => true]);
 		} catch (BusinessLayerException $e) {
 			return new ErrorResponse(Http::STATUS_NOT_FOUND);
