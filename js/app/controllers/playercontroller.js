@@ -7,7 +7,7 @@
  * @author Morris Jobke <hey@morrisjobke.de>
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
  * @copyright Morris Jobke 2013
- * @copyright Pauli Järvinen 2017 - 2025
+ * @copyright Pauli Järvinen 2017 - 2026
  */
 
 import radioIconPath from '../../../img/radio-file.svg';
@@ -24,7 +24,7 @@ function ($scope, $rootScope, playQueueService, Audio, gettextCatalog, Restangul
 	$scope.seekCursorType = 'default';
 	$scope.repeat = OCA.Music.Storage.get('repeat') || 'false';
 	$scope.shuffle = (OCA.Music.Storage.get('shuffle') === 'true');
-	$scope.playbackRate = 1.0;  // rate can be 0.5~3.0
+	$scope.playbackRate = 1.0;  // range [0.5, 3.0]
 	let scrobblePending = false;
 	let scheduledRadioTitleFetch = null;
 	let abortRadioTitleFetch = null;
@@ -84,17 +84,12 @@ function ($scope, $rootScope, playQueueService, Audio, gettextCatalog, Restangul
 		if (!$scope.loading && $scope.currentTrack) {
 			$rootScope.$emit('playerProgress', currentTime);
 
-			// Scrobble when the track has been listened for 10 seconds
-			if (scrobblePending && currentTime >= 10000) {
-				scrobbleCurrentTrack();
-			}
-
 			// Gapless jump to the next track when the playback is very close to the end of a local track
 			if ($scope.player.getDuration() > 0 && $scope.currentTrack.type === 'song' && $scope.repeat !== 'one') {
 				let timeLeft = $scope.player.getDuration() - currentTime;
 				if (timeLeft < GAPLESS_PLAY_OVERLAP_MS) {
 					let nextTrackId = playQueueService.peekNextTrack()?.track?.id;
-					if (nextTrackId !== null && nextTrackId !== $scope.currentTrack.id) {
+					if (nextTrackId !== null) {
 						onEnd();
 					}
 				}
@@ -120,29 +115,43 @@ function ($scope, $rootScope, playQueueService, Audio, gettextCatalog, Restangul
 	});
 
 	function onEnd() {
-		// Scrobble now if it hasn't happened before reaching the end of the track
-		if (scrobblePending) {
-			scrobbleCurrentTrack();
-		}
+		scrobbleCurrentTrackIfAppropriate();
 		if ($scope.repeat === 'one') {
 			scrobblePending = true;
 			$scope.player.seek(0);
 			$scope.player.play();
+			publishNowPlaying();
 		} else {
 			$scope.next(0, /*gapless=*/true);
 		}
 	}
 
-	function scrobbleCurrentTrack() {
-		if ($scope.currentTrack?.type === 'song') {
-			Restangular.one('tracks', $scope.currentTrack.id).all('scrobble').post();
+	function scrobbleCurrentTrackIfAppropriate() {
+		if (scrobblePending && $scope.currentTrack?.type === 'song') {
+			// In order to scrobble a track, at least 50 % or 4 minutes (whichever comes first) of the track must have been played.
+			// This is in line with the guidelines of Last.fm. Last.fm also requires that the track is at least 30 seconds long,
+			// but we handle that check on the server side, and internally record plays also for shorter tracks.
+			const limitPosition = Math.min($scope.player.getDuration() / 2, 4 * 60 * 1000);
+			if ($scope.player.getDuration() > 0 && $scope.player.playPosition() >= limitPosition) {
+				Restangular.one('tracks', $scope.currentTrack.id).all('scrobble').post();
+			}
+			scrobblePending = false;
 		}
-		scrobblePending = false;
+	}
+
+	/**
+	 * Update the "Now playing" status for the current track on the server.
+	 * This is visible in the Subsonic API and on Last.fm (if connected).
+	 */
+	function publishNowPlaying() {
+		if ($scope.currentTrack?.type === 'song') {
+			Restangular.one('tracks', $scope.currentTrack.id).all('playing').post();
+		}
 	}
 
 	$scope.$watch('currentTrack', function(newTrack) {
 		updateWindowTitle(newTrack);
-		// Cancel any pending or ongoing fetch for radio station metadata. If applicable, 
+		// Cancel any pending or ongoing fetch for radio station metadata. If applicable,
 		// the fetch for new data is then initiated within the function playCurrentTrack.
 		cancelRadioTitleFetch();
 	});
@@ -270,6 +279,8 @@ function ($scope, $rootScope, playQueueService, Audio, gettextCatalog, Restangul
 					$scope.player.seekMsecs(startOffset);
 				}
 				$scope.player.play();
+
+				publishNowPlaying();
 			}
 		}
 	}
@@ -365,6 +376,7 @@ function ($scope, $rootScope, playQueueService, Audio, gettextCatalog, Restangul
 	};
 
 	$scope.stop = function() {
+		scrobbleCurrentTrackIfAppropriate();
 		$scope.player.stop();
 		$scope.currentTrack = null;
 		$rootScope.playing = false;
@@ -427,6 +439,8 @@ function ($scope, $rootScope, playQueueService, Audio, gettextCatalog, Restangul
 	});
 
 	$scope.next = function(startOffset = 0, gapless = false) {
+		scrobbleCurrentTrackIfAppropriate();
+
 		let entry = playQueueService.jumpToNextTrack();
 
 		// For ordinary tracks, skip the tracks with unsupported MIME types.

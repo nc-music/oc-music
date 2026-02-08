@@ -10,6 +10,8 @@
   * If `scrobble` is called with multiple `id` values, some of which are unknown, then all the valid ones get recorded and unknown ones silently discarded (previously, songs were recorded one-by-one until hitting the unknown `id`, after which the rest got discarded)
 - Don't scrobble songs shorter than 30 seconds to Last.fm to comply with the service's guideline
   [nc-music#116](https://github.com/nc-music/music/pull/116) @mattwellss
+- Record a track played only if at least 50 % or 4 minutes has been played, to comply with Last.fm's guideline. Mark the track immediately as "playing" on the server.
+  * This influences only the Music app's own web UI, the behavior of Subsonic and Ampache clients may vary
 
 ### Fixed
 - Deprecation warnings printed on PHP 8.3+ while executing the Music background tasks
