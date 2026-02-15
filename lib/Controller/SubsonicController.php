@@ -835,11 +835,17 @@ class SubsonicController extends ApiController {
 		$userId = $this->user();
 		$tracks = $this->trackBusinessLayer->findById($trackIds, $userId, /*preserveOrder=*/ true);
 
-		// All the requested track IDs must be valid or we don't scrobble anything
+		// Log the event if any of the requested track IDs were not found. Throw an error only if none of the requested track IDs were found,
+		// to allow for partial success in case of multiple IDs. The likely reason for some IDs not being found is that the client is scrobbling
+		// old plays from its local history and some of the tracks have been deleted since then.
 		if (\count($tracks) !== \count($trackIds)) {
 			$foundTrackIds = ArrayUtil::extractIds($tracks);
 			$invalidTrackIds = ArrayUtil::diff($trackIds, $foundTrackIds);
-			throw new SubsonicException('Track(s) with ID not found: ' . \json_encode($invalidTrackIds));
+
+			$this->logger->warning("Scrobble request with some invalid track IDs: " . \json_encode($invalidTrackIds));
+			if (\count($tracks) === 0) {
+				throw new SubsonicException('No track(s) found with ID(s): ' . \json_encode($invalidTrackIds), 70);
+			}
 		}
 
 		// Some clients make multiple calls to this method in so rapid succession that they get executed
@@ -1984,7 +1990,7 @@ class SubsonicController extends ApiController {
 
 	/**
 	 * Given a prefixed ID like 'artist-123' or 'track-45', return the string part and the numeric part.
-	 * @throws SubsonicException if the \a $id doesn't follow the expected pattern
+	 * @throws SubsonicException with code 0 if the \a $id doesn't follow the expected pattern
 	 */
 	private static function parseEntityId(string $id) : array {
 		$parts = \explode('-', $id);
