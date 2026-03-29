@@ -12,6 +12,7 @@
   [nc-music#116](https://github.com/nc-music/music/pull/116) @mattwellss
 - Record a track played only if at least 50 % or 4 minutes has been played, to comply with Last.fm's guideline. Mark the track immediately as "playing" on the server.
   * This influences only the Music app's own web UI, the behavior of Subsonic and Ampache clients may vary
+- Periodically refresh "Now playing" song to Last.fm while playing (Last.fm forgets the song after 4 minutes which was an issue on longer songs or when the song was paused)
 
 ### Fixed
 - Deprecation warnings printed on PHP 8.3+ while executing the Music background tasks

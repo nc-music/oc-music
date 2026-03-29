@@ -26,10 +26,12 @@ function ($scope, $rootScope, playQueueService, Audio, gettextCatalog, Restangul
 	$scope.shuffle = (OCA.Music.Storage.get('shuffle') === 'true');
 	$scope.playbackRate = 1.0;  // range [0.5, 3.0]
 	let scrobblePending = false;
+	let nowPlayingLatestUpdateTime = null;
 	let scheduledRadioTitleFetch = null;
 	let abortRadioTitleFetch = null;
 	let browserMediaSession = new BrowserMediaSession($scope.player);
 	const GAPLESS_PLAY_OVERLAP_MS = 500;
+	const NOW_PLAYING_UPDATE_INTERVAL_MS = 60000;
 	const RADIO_INFO_POLL_PERIOD_MS = 30000;
 	const RADIO_INFO_POLL_MAX_ATTEMPTS = 3;
 	const PLAYBACK_RATE_STEPPING = 0.25;
@@ -94,6 +96,11 @@ function ($scope, $rootScope, playQueueService, Audio, gettextCatalog, Restangul
 					}
 				}
 			}
+
+			// Periodically refresh the "now playing" information. Last.fm seems to forget the information after 4 minutes.
+			if ($scope.currentTrack.type === 'song' && nowPlayingLatestUpdateTime !== null && Date.now() - nowPlayingLatestUpdateTime >= NOW_PLAYING_UPDATE_INTERVAL_MS) {
+				publishNowPlaying();
+			}
 		}
 	});
 	onPlayerEvent('end', onEnd);
@@ -145,6 +152,7 @@ function ($scope, $rootScope, playQueueService, Audio, gettextCatalog, Restangul
 	 */
 	function publishNowPlaying() {
 		if ($scope.currentTrack?.type === 'song') {
+			nowPlayingLatestUpdateTime = Date.now();
 			Restangular.one('tracks', $scope.currentTrack.id).all('playing').post();
 		}
 	}
