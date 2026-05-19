@@ -6,6 +6,8 @@
 ### Fixed
 - Deprecation warnings printed on PHP 8.3+ while executing the Music background tasks
 - Web UI trying to load an invalid image URL upon page load
+- Some HLS-type radio streams not playing because URLs contained in `#EXT-X-*` headers were handled incorrectly
+  [#133](https://github.com/nc-music/music/issues/133)
 
 ## 2.5.2 - 2026-05-10
 

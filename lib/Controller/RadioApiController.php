@@ -398,13 +398,18 @@ class RadioApiController extends Controller {
 		} elseif (!$this->tokenService->urlTokenIsValid($url, \rawurldecode($token))) {
 			return new ErrorResponse(Http::STATUS_UNAUTHORIZED, 'the security token is invalid');
 		} else {
-			list('content' => $content, 'status_code' => $status, 'content_type' => $contentType)
+			list('content' => $content, 'status_code' => $status, 'content_type' => $contentType, 'message' => $message)
 				= HttpUtil::loadFromUrl($url);
 
-			return new FileResponse([
-				'content' => $content,
-				'mimetype' => $contentType ?? 'application/octet-stream'
-			], $status);
+			if ($content === false) {
+				$this->logger->warning("Failed to load HLS segment from $url, status: $status $message");
+				return new ErrorResponse(Http::STATUS_NOT_FOUND, 'failed to read the HLS segment');
+			} else {
+				return new FileResponse([
+					'content' => $content,
+					'mimetype' => $contentType ?? 'application/octet-stream'
+				], $status);
+			}
 		}
 	}
 
