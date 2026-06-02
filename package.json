@@ -60,6 +60,11 @@
 		"webpack-assets-manifest": "^5.1.0",
 		"webpack-cli": "^4.10.0"
 	},
+	"overrides": {
+		"restangular": {
+			"lodash": "$lodash"
+		}
+	},
 	"engine": "node >= 0.8",
 	"scripts": {
 		"build": "webpack",
