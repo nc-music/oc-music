@@ -16,6 +16,8 @@
 - Web UI trying to load an invalid image URL upon page load
 - Some HLS-type radio streams not playing because URLs contained in `#EXT-X-*` headers were handled incorrectly
   [#133](https://github.com/nc-music/music/issues/133)
+- Scrobbling to Last.fm failing if the song was missing either track number or album name
+  [#134](https://github.com/nc-music/music/issues/134)
 
 ## 2.5.2 - 2026-05-10
 

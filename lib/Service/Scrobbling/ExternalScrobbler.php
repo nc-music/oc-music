@@ -7,7 +7,7 @@
  * later. See the COPYING file.
  *
  * @author Matthew Wells
- * @author Pauli Järvinen <pauli.jarvine@gmail.co>
+ * @author Pauli Järvinen <pauli.jarvine@gmail.com>
  * @copyright Matthew Wells 2025
  * @copyright Pauli Järvinen 2026
  */
@@ -128,8 +128,6 @@ class ExternalScrobbler implements IScrobbler {
 			return;
 		}
 
-		$timestamp = $timeOfPlay->getTimestamp();
-
 		// Last.fm's docs say a track must be >30 seconds in order to scrobble
 		// This scrobbler uses the Last.fm Scrobbler 2.0 spec, so we follow that rule
 		// https://www.last.fm/api/scrobbling#when-is-a-scrobble-a-scrobble
@@ -137,27 +135,16 @@ class ExternalScrobbler implements IScrobbler {
 			return;
 		}
 
-		$scrobbleData = [
-			'sk' => $sessionKey
-		];
-
 		$this->albumBusinessLayer->injectAlbumsToTracks([$track], $userId);
-
-		$trackData = $this->generateTrackData($track);
-
-		if (isset($trackData['albumArtist'])) {
-			$scrobbleData["albumArtist[0]"] = $trackData['albumArtist'];
-		}
-		$scrobbleData["artist[0]"] = $trackData['artist'];
-		$scrobbleData["track[0]"] = $trackData['track'];
-		$scrobbleData["timestamp[0]"] = $timestamp;
-		$scrobbleData["album[0]"] = $trackData['album'];
-		$scrobbleData["trackNumber[0]"] = $trackData['trackNumber'];
+		$scrobbleData = \array_merge([
+			'sk' => $sessionKey,
+			'timestamp' => $timeOfPlay->getTimestamp()
+		], $this->generateTrackData($track));
 
 		$xml = $this->execRequest($this->generateMethodParams('track.scrobble', $scrobbleData));
 
 		if ((string)$xml['status'] !== 'ok') {
-			$this->logger->warning("Failed to scrobble to {$this->name}");
+			$this->logger->warning("Failed to scrobble to {$this->name}, error: " . (string)$xml->error);
 		}
 	}
 
@@ -179,8 +166,7 @@ class ExternalScrobbler implements IScrobbler {
 		$xml = $this->execRequest($this->generateMethodParams('track.updateNowPlaying', $scrobbleData));
 
 		if ((string)$xml['status'] !== 'ok') {
-			$this->logger->warning("Failed to set now playing track on {$this->name}");
-			$this->logger->error((string)$xml);
+			$this->logger->warning("Failed to set now playing track on {$this->name}, error: " . (string)$xml->error);
 		}
 	}
 
@@ -270,24 +256,28 @@ class ExternalScrobbler implements IScrobbler {
 	 * @return array{
 	 *	artist: string|null,
 	 *	track: string,
-	 *	album: string|null,
-	 *	trackNumber: int|null,
-	 *	albumArtist?: string		
-	 * }		
+	 *	album?: string,
+	 *	trackNumber?: int,
+	 *	albumArtist?: string
+	 * }
 	 */
 	private function generateTrackData(Track $track) : array {
 		$trackData = [
 			'artist' => $track->getArtistName(),
 			'track' => $track->getTitle(),
-			'album' => $track->getAlbumName(),
-			'trackNumber' => $track->getNumber()
 		];
 
-		if ($track->getAlbum()) {
-			$albumArtist = $track->getAlbum()->getAlbumArtistName();
-			if ($albumArtist !== $track->getArtistName()) {
-				$trackData['albumArtist'] = $albumArtist;
-			}
+		if (!empty($track->getAlbumName())) {
+			$trackData['album'] = $track->getAlbumName();
+		}
+
+		if (!empty($track->getNumber())) {
+			$trackData['trackNumber'] = $track->getNumber();
+		}
+
+		$albumArtistName = $track->getAlbum()?->getAlbumArtistName();
+		if (!empty($albumArtistName) && $albumArtistName !== $track->getArtistName()) {
+			$trackData['albumArtist'] = $albumArtistName;
 		}
 
 		return $trackData;
