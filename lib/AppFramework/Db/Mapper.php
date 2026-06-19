@@ -89,7 +89,7 @@ abstract class Mapper {
 	public function delete(Entity $entity) {
 		$sql = 'DELETE FROM `' . $this->tableName . '` WHERE `id` = ?';
 		$stmt = $this->execute($sql, [$entity->getId()]);
-		$stmt->closeCursor();
+		$stmt->free();
 		return $entity;
 	}
 
@@ -135,7 +135,7 @@ abstract class Mapper {
 
 		$entity->setId((int) $this->db->lastInsertId($this->tableName));
 
-		$stmt->closeCursor();
+		$stmt->free();
 
 		return $entity;
 	}
@@ -194,7 +194,7 @@ abstract class Mapper {
 		$params[] = $id;
 
 		$stmt = $this->execute($sql, $params);
-		$stmt->closeCursor();
+		$stmt->free();
 
 		return $entity;
 	}
@@ -232,7 +232,7 @@ abstract class Mapper {
 	 * @param array $params the params which should replace the ? in the sql query
 	 * @param int $limit the maximum number of rows
 	 * @param int $offset from which row we want to start
-	 * @return \Doctrine\DBAL\Driver\Statement the database query result
+	 * @return mixed the database query result (depending on the Doctrine DBAL version, this can be either a Statement or a Result)
 	 * @since 7.0.0
 	 */
 	protected function execute($sql, array $params=[], $limit=null, $offset=null) {
@@ -252,9 +252,8 @@ abstract class Mapper {
 			}
 		}
 
-		$query->execute();
-
-		return $query;
+		$result = $query->execute();
+		return \is_bool($result) ? $query : $result;
 	}
 
 	/**
@@ -275,7 +274,7 @@ abstract class Mapper {
 		$row = $stmt->fetch();
 
 		if ($row === false || $row === null) {
-			$stmt->closeCursor();
+			$stmt->free();
 			$msg = $this->buildDebugMessage(
 				'Did expect one result but found none when executing',
 				$sql,
@@ -286,7 +285,7 @@ abstract class Mapper {
 			throw new DoesNotExistException($msg);
 		}
 		$row2 = $stmt->fetch();
-		$stmt->closeCursor();
+		$stmt->free();
 		//MDB2 returns null, PDO and doctrine false when no row is available
 		if (! ($row2 === false || $row2 === null)) {
 			$msg = $this->buildDebugMessage(
@@ -353,7 +352,7 @@ abstract class Mapper {
 			$entities[] = $this->mapRowToEntity($row);
 		}
 
-		$stmt->closeCursor();
+		$stmt->free();
 
 		return $entities;
 	}

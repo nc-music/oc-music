@@ -92,7 +92,7 @@ class Cache {
 				WHERE `user_id` = ? AND `key` = ?';
 		$result = $this->db->executeQuery($sql, [$userId, $key]);
 		$rows = $result->fetchAll();
-		$result->closeCursor();
+		$result->free();
 
 		return \count($rows) ? $rows[0]['data'] : null;
 	}
@@ -115,7 +115,7 @@ class Cache {
 
 		$result = $this->db->executeQuery($sql, $params);
 		$rows = $result->fetchAll();
-		$result->closeCursor();
+		$result->free();
 
 		return $rows;
 	}
@@ -128,7 +128,7 @@ class Cache {
 				WHERE `key` = ? AND `data` = ?';
 		$result = $this->db->executeQuery($sql, [$key, $data]);
 		$rows = $result->fetchAll();
-		$result->closeCursor();
+		$result->free();
 
 		return \count($rows) ? $rows[0]['user_id'] : null;
 	}

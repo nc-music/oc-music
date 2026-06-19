@@ -82,7 +82,7 @@ interface Statement
      *
      * @return boolean              Returns TRUE on success or FALSE on failure.
      */
-    function closeCursor();
+    function free();
 
     /** 
      * columnCount
@@ -172,17 +172,17 @@ interface Statement
     function fetchAll($fetchStyle = PDO::FETCH_BOTH);
 
     /**
-     * fetchColumn
+     * fetchOne
      * Returns a single column from the next row of a
      * result set or FALSE if there are no more rows.
      *
      * @param integer $columnIndex          0-indexed number of the column you wish to retrieve from the row. If no 
-     *                                      value is supplied, PDOStatement->fetchColumn() 
+     *                                      value is supplied, PDOStatement->fetchOne() 
      *                                      fetches the first column.
      *
      * @return string                       returns a single column in the next row of a result set.
      */
-    function fetchColumn($columnIndex = 0);
+    function fetchOne($columnIndex = 0);
 
     /**
      * rowCount

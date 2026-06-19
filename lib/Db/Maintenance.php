@@ -37,7 +37,7 @@ class Maintenance {
 				WHERE `key` = \'scanning\'';
 		$result = $this->db->executeQuery($sql);
 		$rows = $result->fetchAll();
-		$result->closeCursor();
+		$result->free();
 
 		$now = \time();
 		$modRows = 0;

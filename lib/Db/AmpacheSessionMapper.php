@@ -47,7 +47,7 @@ class AmpacheSessionMapper extends Mapper {
 
 		$params = [$expiry, $token];
 		$result = $this->execute($sql, $params);
-		$result->closeCursor();
+		$result->free();
 	}
 
 	public function cleanUp() : void {
@@ -55,7 +55,7 @@ class AmpacheSessionMapper extends Mapper {
 				WHERE `expiry` < ?';
 		$params = [\time()];
 		$result = $this->execute($sql, $params);
-		$result->closeCursor();
+		$result->free();
 	}
 
 	public function revokeSessions(int $ampacheUserId) : void {
@@ -63,6 +63,6 @@ class AmpacheSessionMapper extends Mapper {
 				WHERE `ampache_user_id` = ?';
 		$params = [$ampacheUserId];
 		$result = $this->execute($sql, $params);
-		$result->closeCursor();
+		$result->free();
 	}
 }
