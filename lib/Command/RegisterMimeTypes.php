@@ -39,7 +39,7 @@ class RegisterMimeTypes extends Command {
 	/**
 	 * @return void
 	 */
-	protected function configure() {
+	protected function configure() : void {
 		$this
 			->setName('music:register-mime-types')
 			->setDescription('map following file extensions to proper MIME types: ' . \json_encode(\array_keys($this->mimeMappings)));
@@ -49,7 +49,7 @@ class RegisterMimeTypes extends Command {
 	/**
 	 * @return int
 	 */
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output) : int {
 		try {
 			$output->writeln('Registering MIME types for existing files...');
 			$this->registerForExistingFiles($output);
