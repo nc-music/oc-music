@@ -2,6 +2,7 @@
 
 ### Fixed
 - Deprecation warnings printed on PHP 8.3+ while executing the Music background tasks
+- Web UI trying to load an invalid image URL upon page load
 
 ## 2.5.2 - 2026-05-10
 
