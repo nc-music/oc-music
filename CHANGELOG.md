@@ -1,3 +1,8 @@
+## [Unreleased]
+
+### Fixed
+- Deprecation warnings printed on PHP 8.3+ while executing the Music background tasks
+
 ## 2.5.2 - 2026-05-10
 
 ### Changed
