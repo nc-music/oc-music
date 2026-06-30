@@ -29,9 +29,9 @@
 		"restangular": "^1.6.1"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.22.8",
+		"@babel/core": "^8.0.1",
 		"@babel/eslint-parser": "^7.22.7",
-		"@babel/preset-env": "^7.22.7",
+		"@babel/preset-env": "^8.0.2",
 		"@types/angular": "^1.8.5",
 		"@types/angular-gettext": "^2.1.35",
 		"@types/core-js": "^2.5.5",
@@ -40,7 +40,7 @@
 		"@types/restangular": "^1.5.46",
 		"acorn": "^8.10.0",
 		"angular-gettext-cli": "^1.2.0",
-		"babel-loader": "^9.1.3",
+		"babel-loader": "^10.1.1",
 		"clean-webpack-plugin": "^3.0.0",
 		"css-loader": "^6.8.1",
 		"eslint": "^8.44.0",
