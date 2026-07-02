@@ -57,7 +57,7 @@ If the database would somehow get corrupted, the user can force it to be rebuilt
 
 ### Commands
 
-If preferred, it is also possible to use the command line tool for the database maintenance, see https://github.com/owncloud/music/wiki/Commands. This may be quicker than scanning via the web UI in case of large music library, and optionally allows targeting more than one user at once, as well as some more options not available on the web interface.
+If preferred, it is also possible to use the command line tool for the database maintenance, see https://github.com/nc-music/oc-music/wiki/Commands. This may be quicker than scanning via the web UI in case of large music library, and optionally allows targeting more than one user at once, as well as some more options not available on the web interface.
 
 
 ### Ampache and Subsonic
@@ -99,7 +99,7 @@ The application's scalability for large music collections has gradually improved
 
 #### Translations
 
-There exist partial translations for the Music app for many languages, but most of them are very much incomplete. In the past, the application was translated at https://www.transifex.com/owncloud-org/owncloud/ and the resource still exists there. However, large majority of the strings used in the app have not been picked by Transifex for many years now, and hence the translations from Transifex cannot be actually used. The root cause is disparity in the localization mechanisms used in the Music app and on ownCloud in general, and bridging the gap would require some support from ownCloud core team. This is probably never going to happen, see https://central.owncloud.org/t/owncloud-music-app-translations/14881. For now, you may contribute translations as normal pull requests, by following the instructions from https://github.com/owncloud/music/issues/671#issuecomment-782746463.
+There exist partial translations for the Music app for many languages, but most of them are very much incomplete. In the past, the application was translated at https://www.transifex.com/owncloud-org/owncloud/ and the resource still exists there. However, large majority of the strings used in the app have not been picked by Transifex for many years now, and hence the translations from Transifex cannot be actually used. The root cause is disparity in the localization mechanisms used in the Music app and on ownCloud in general., and bridging the gap would require some support from ownCloud core team. This is probably never going to happen, see https://central.owncloud.org/t/owncloud-music-app-translations/14881. For now, you may contribute translations as normal pull requests, by following the instructions from https://github.com/nc-music/oc-music/issues/671#issuecomment-782746463.
 
 #### SMB storage
 
@@ -174,7 +174,7 @@ When the tools are setup correctly, all the strings can be extracted from the so
 	cd build
 	make l10n-extract
 
-The music.pot file can then be used to update the language-specific translation file (l10n/*/music.po) as described in https://github.com/owncloud/music/issues/671#issuecomment-782746463.
+The music.pot file can then be used to update the language-specific translation file (l10n/*/music.po) as described in https://github.com/nc-music/oc-music/issues/671#issuecomment-782746463.
 
 Once the translations have been updated in the .po files, we need to generate the final source files used to build the Music application. This, again, uses both `angular-gettext` and `l10n/l10n.pl`. For this, execute
 
@@ -194,7 +194,7 @@ To connect external client applications, partial implementations of the followin
 * [Ampache JSON API](https://github.com/ampache/ampache/wiki/JSON-methods) at `/ampache/server/json.server.php`
 * [Subsonic API](http://www.subsonic.org/pages/api.jsp) at `/subsonic/rest/{method}`
 
-The web interface of the Music app uses a proprietary REST API. Note that this API may change between the application versions without prior notice. For list of all available endpoints, see [appinfo/routes.php](https://github.com/owncloud/music/blob/master/appinfo/routes.php). As this API is not documented anywhere, the details of each endpoint have to be checked from the implementation. See [here](https://github.com/owncloud/music/issues/1012#issuecomment-1256943457) for some hints.
+The web interface of the Music app uses a proprietary REST API. Note that this API may change between the application versions without prior notice. For list of all available endpoints, see [appinfo/routes.php](https://github.com/nc-music/oc-music/blob/master/appinfo/routes.php). As this API is not documented anywhere, the details of each endpoint have to be checked from the implementation. See [here](https://github.com/nc-music/oc-music/issues/1012#issuecomment-1256943457) for some hints.
 
 
 ### `/api/log`
