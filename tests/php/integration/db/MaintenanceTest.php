@@ -68,7 +68,7 @@ class MaintenanceTest extends \PHPUnit\Framework\TestCase {
 				->setParameter('user_id', $user);
 			$stmt = $qb->execute();
 			$row = $stmt->fetch();
-			$stmt->free();
+			$stmt->closeCursor();
 			$count = $row['count'];
 
 			$this->assertEquals(0, $count);

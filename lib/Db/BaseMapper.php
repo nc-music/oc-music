@@ -175,7 +175,7 @@ abstract class BaseMapper extends Mapper {
 			$sql = "SELECT `id` FROM `{$this->getTableName()}` WHERE `starred` IS NOT NULL AND `user_id` = ?";
 			$result = $this->execute($sql, [$userId]);
 			$return = \array_map('intval', $result->fetchAll(\PDO::FETCH_COLUMN));
-			$result->free();
+			$result->closeCursor();
 			return $return;
 		} else {
 			return [];
@@ -248,7 +248,7 @@ abstract class BaseMapper extends Mapper {
 		$result = $this->execute($sql, $params);
 
 		$return = \array_map('intval', $result->fetchAll(\PDO::FETCH_COLUMN));
-		$result->free();
+		$result->closeCursor();
 		return $return;
 	}
 
@@ -270,7 +270,7 @@ abstract class BaseMapper extends Mapper {
 			$params = \array_merge([$userId], $parentIds);
 			$result = $this->execute($sql, $params);
 			$rows = $result->fetchAll();
-			$result->free();
+			$result->closeCursor();
 
 			// ensure that the result contains also "parents" with no children and has the same order as $parentIds
 			$return = \array_fill_keys($parentIds, []);
@@ -331,7 +331,7 @@ abstract class BaseMapper extends Mapper {
 
 		$result = $this->execute($sql, $params);
 		$rows = $result->fetchAll();
-		$result->free();
+		$result->closeCursor();
 
 		return $rows;
 	}
@@ -344,7 +344,7 @@ abstract class BaseMapper extends Mapper {
 		$sql = "SELECT DISTINCT(`user_id`) FROM `{$this->getTableName()}`";
 		$result = $this->execute($sql);
 		$rows = $result->fetchAll(\PDO::FETCH_COLUMN);
-		$result->free();
+		$result->closeCursor();
 		return $rows;
 	}
 
@@ -368,7 +368,7 @@ abstract class BaseMapper extends Mapper {
 	protected function deleteByCond(string $condition, array $params) : void {
 		$sql = "DELETE FROM `{$this->getTableName()}` WHERE ". $condition;
 		$result = $this->execute($sql, $params);
-		$result->free();
+		$result->closeCursor();
 	}
 
 	/**
@@ -377,7 +377,7 @@ abstract class BaseMapper extends Mapper {
 	public function deleteAll(string $userId) : void {
 		$sql = "DELETE FROM `{$this->getTableName()}` WHERE `user_id` = ?";
 		$result = $this->execute($sql, [$userId]);
-		$result->free();
+		$result->closeCursor();
 	}
 
 	/**
@@ -387,7 +387,7 @@ abstract class BaseMapper extends Mapper {
 		$sql = "SELECT 1 FROM `{$this->getTableName()}` WHERE `id` = ? AND `user_id` = ?";
 		$result = $this->execute($sql, [$id, $userId]);
 		$row = $result->fetch();
-		$result->free();
+		$result->closeCursor();
 		return (bool)$row;
 	}
 
@@ -398,7 +398,7 @@ abstract class BaseMapper extends Mapper {
 		$sql = "SELECT COUNT(*) AS count FROM `{$this->getTableName()}` WHERE `user_id` = ?";
 		$result = $this->execute($sql, [$userId]);
 		$row = $result->fetch();
-		$result->free();
+		$result->closeCursor();
 		return \intval($row['count']);
 	}
 
@@ -409,7 +409,7 @@ abstract class BaseMapper extends Mapper {
 		$sql = "SELECT MAX(`id`) AS max_id FROM `{$this->getTableName()}` WHERE `user_id` = ?";
 		$result = $this->execute($sql, [$userId]);
 		$row = $result->fetch();
-		$result->free();
+		$result->closeCursor();
 		$max = $row['max_id'];
 		return $max === null ? null : (int)$max;
 	}
@@ -526,7 +526,7 @@ abstract class BaseMapper extends Mapper {
 		$params = \array_merge([$date], $ids, [$userId]);
 		$result = $this->execute($sql, $params);
 		$modCount = $result->rowCount();
-		$result->free();
+		$result->closeCursor();
 
 		return $modCount;
 	}
@@ -535,7 +535,7 @@ abstract class BaseMapper extends Mapper {
 		$sql = "SELECT MAX(`{$this->getTableName()}`.`created`) FROM `{$this->getTableName()}` WHERE `user_id` = ?";
 		$result = $this->execute($sql, [$userId]);
 		$createdTime = $result->fetch(\PDO::FETCH_COLUMN);
-		$result->free();
+		$result->closeCursor();
 
 		return ($createdTime === null) ? null : new \DateTime($createdTime);
 	}
@@ -544,7 +544,7 @@ abstract class BaseMapper extends Mapper {
 		$sql = "SELECT MAX(`{$this->getTableName()}`.`updated`) FROM `{$this->getTableName()}` WHERE `user_id` = ?";
 		$result = $this->execute($sql, [$userId]);
 		$createdTime = $result->fetch(\PDO::FETCH_COLUMN);
-		$result->free();
+		$result->closeCursor();
 
 		return ($createdTime === null) ? null : new \DateTime($createdTime);
 	}
@@ -838,7 +838,7 @@ abstract class BaseMapper extends Mapper {
 		try {
 			$result = $this->execute('SELECT EXISTS(SELECT 1 FROM `pragma_function_list` WHERE `NAME` = ?)', [$funcName]);
 			$row = $result->fetch();
-			$result->free();
+			$result->closeCursor();
 			return (bool)\current($row);
 		} catch (\Exception $e) {
 			return false;
@@ -861,7 +861,7 @@ abstract class BaseMapper extends Mapper {
 
 		$result = $this->execute($sql, $values);
 		$id = $result->fetchOne();
-		$result->free();
+		$result->closeCursor();
 
 		if ($id === false) {
 			throw new DoesNotExistException('Conflicting entity not found');
@@ -874,7 +874,7 @@ abstract class BaseMapper extends Mapper {
 		$sql = "SELECT `created` FROM {$this->getTableName()} WHERE `id` = ?";
 		$result = $this->execute($sql, [$id]);
 		$created = $result->fetchOne();
-		$result->free();
+		$result->closeCursor();
 		if ($created === false) {
 			throw new DoesNotExistException('ID not found');
 		}

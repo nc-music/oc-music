@@ -144,7 +144,7 @@ class TrackMapper extends BaseMapper {
 		}
 		$result = $this->execute($sql, $params);
 		$rows = $result->fetchAll(\PDO::FETCH_COLUMN);
-		$result->free();
+		$result->closeCursor();
 
 		return $rows;
 	}
@@ -171,7 +171,7 @@ class TrackMapper extends BaseMapper {
 
 		$result = $this->execute($sql, $params);
 		$rows = $result->fetchAll(\PDO::FETCH_COLUMN);
-		$result->free();
+		$result->closeCursor();
 
 		return $rows;
 	}
@@ -215,7 +215,7 @@ class TrackMapper extends BaseMapper {
 		$sql = 'SELECT COUNT(*) AS `count` FROM `*PREFIX*music_tracks` WHERE `artist_id` = ?';
 		$result = $this->execute($sql, [$artistId]);
 		$row = $result->fetch();
-		$result->free();
+		$result->closeCursor();
 		return (int)$row['count'];
 	}
 
@@ -223,7 +223,7 @@ class TrackMapper extends BaseMapper {
 		$sql = 'SELECT COUNT(*) AS `count` FROM `*PREFIX*music_tracks` WHERE `album_id` = ?';
 		$result = $this->execute($sql, [$albumId]);
 		$row = $result->fetch();
-		$result->free();
+		$result->closeCursor();
 		return (int)$row['count'];
 	}
 
@@ -234,7 +234,7 @@ class TrackMapper extends BaseMapper {
 		$sql = 'SELECT SUM(`length`) AS `duration` FROM `*PREFIX*music_tracks` WHERE `album_id` = ?';
 		$result = $this->execute($sql, [$albumId]);
 		$row = $result->fetch();
-		$result->free();
+		$result->closeCursor();
 		return (int)$row['duration'];
 	}
 
@@ -245,7 +245,7 @@ class TrackMapper extends BaseMapper {
 		$sql = 'SELECT SUM(`length`) AS `duration` FROM `*PREFIX*music_tracks` WHERE `artist_id` = ?';
 		$result = $this->execute($sql, [$artistId]);
 		$row = $result->fetch();
-		$result->free();
+		$result->closeCursor();
 		return (int)$row['duration'];
 	}
 
@@ -262,7 +262,7 @@ class TrackMapper extends BaseMapper {
 						$this->questionMarks(\count($trackIds));
 			$result = $this->execute($sql, $trackIds);
 			$rows = $result->fetchAll();
-			$result->free();
+			$result->closeCursor();
 
 			foreach ($rows as $row) {
 				$return[$row['id']] = (int)$row['length'];
@@ -419,7 +419,7 @@ class TrackMapper extends BaseMapper {
 
 		$result = $this->execute($sql, [$userId]);
 		$rows = $result->fetchAll();
-		$result->free();
+		$result->closeCursor();
 
 		// Sort the results according the file names. This can't be made using ORDERBY in the
 		// SQL query because then we couldn't use the "natural order" comparison algorithm
@@ -449,7 +449,7 @@ class TrackMapper extends BaseMapper {
 
 			$result = $this->execute($sql, $nodeIds);
 			$rows = $result->fetchAll();
-			$result->free();
+			$result->closeCursor();
 
 			foreach ($rows as $row) {
 				$return[$row['fileid']] = [
@@ -480,7 +480,7 @@ class TrackMapper extends BaseMapper {
 
 			$result = $this->execute($sql, $folderIds);
 			$rows = $result->fetchAll(\PDO::FETCH_COLUMN);
-			$result->free();
+			$result->closeCursor();
 		}
 
 		return $rows;
@@ -495,7 +495,7 @@ class TrackMapper extends BaseMapper {
 				`genre_id` IS NOT NULL AND `user_id` = ? AND `artist_id` = ?';
 		$result = $this->execute($sql, [$userId, $artistId]);
 		$rows = $result->fetchAll(\PDO::FETCH_COLUMN);
-		$result->free();
+		$result->closeCursor();
 		return $rows;
 	}
 
@@ -508,7 +508,7 @@ class TrackMapper extends BaseMapper {
 				WHERE `genre_id` IS NOT NULL and `user_id` = ?';
 		$result = $this->execute($sql, [$userId]);
 		$rows = $result->fetchAll();
-		$result->free();
+		$result->closeCursor();
 
 		$return = [];
 		foreach ($rows as $row) {
@@ -531,7 +531,7 @@ class TrackMapper extends BaseMapper {
 				WHERE `genre_id` IS NULL and `user_id` = ?';
 		$result = $this->execute($sql, [$userId]);
 		$rows = $result->fetchAll(\PDO::FETCH_COLUMN);
-		$result->free();
+		$result->closeCursor();
 		return $rows;
 	}
 
@@ -548,7 +548,7 @@ class TrackMapper extends BaseMapper {
 
 		$result = $this->execute($sql, $params);
 		$updated = ($result->rowCount() > 0);
-		$result->free();
+		$result->closeCursor();
 
 		return $updated;
 	}
@@ -573,7 +573,7 @@ class TrackMapper extends BaseMapper {
 
 		$result = $this->execute($sql, $params);
 		$updated = $result->rowCount();
-		$result->free();
+		$result->closeCursor();
 
 		return $updated;
 	}

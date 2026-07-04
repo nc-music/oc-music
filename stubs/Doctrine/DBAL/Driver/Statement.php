@@ -82,7 +82,7 @@ interface Statement
      *
      * @return boolean              Returns TRUE on success or FALSE on failure.
      */
-    function free();
+    function closeCursor();
 
     /** 
      * columnCount

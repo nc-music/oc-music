@@ -84,7 +84,7 @@ class AlbumMapper extends BaseMapper {
 		while ($row = $result->fetch()) {
 			$artistIds[$row['album_id']][] = (int)$row['artist_id'];
 		}
-		$result->free();
+		$result->closeCursor();
 		return $artistIds;
 	}
 
@@ -112,7 +112,7 @@ class AlbumMapper extends BaseMapper {
 		while ($row = $result->fetch()) {
 			$years[$row['album_id']][] = (int)$row['year'];
 		}
-		$result->free();
+		$result->closeCursor();
 		return $years;
 	}
 
@@ -146,7 +146,7 @@ class AlbumMapper extends BaseMapper {
 			$genre->setName($row['genre_name']);
 			$genres[$row['album_id']][] = $genre;
 		}
-		$result->free();
+		$result->closeCursor();
 		return $genres;
 	}
 
@@ -174,7 +174,7 @@ class AlbumMapper extends BaseMapper {
 		while ($row = $result->fetch()) {
 			$diskCountByAlbum[$row['album_id']] = (int)$row['disc_count'];
 		}
-		$result->free();
+		$result->closeCursor();
 		return $diskCountByAlbum;
 	}
 
@@ -195,7 +195,7 @@ class AlbumMapper extends BaseMapper {
 		while ($row = $result->fetch()) {
 			$playCountByAlbum[$row['album_id']] = (int)$row['sum_count'];
 		}
-		$result->free();
+		$result->closeCursor();
 		return $playCountByAlbum;
 	}
 
@@ -216,7 +216,7 @@ class AlbumMapper extends BaseMapper {
 		while ($row = $result->fetch()) {
 			$latestTimeByAlbum[$row['album_id']] = $row['latest_time'];
 		}
-		$result->free();
+		$result->closeCursor();
 		return $latestTimeByAlbum;
 	}
 
@@ -238,7 +238,7 @@ class AlbumMapper extends BaseMapper {
 		while ($row = $result->fetch()) {
 			$latestTimeByAlbum[$row['album_id']] = $row['latest_time'];
 		}
-		$result->free();
+		$result->closeCursor();
 		return $latestTimeByAlbum;
 	}
 
@@ -314,7 +314,7 @@ class AlbumMapper extends BaseMapper {
 		$params = [$folderId];
 		$result = $this->execute($sql, $params);
 		$albumIds = $result->fetchAll(\PDO::FETCH_COLUMN);
-		$result->free();
+		$result->closeCursor();
 
 		$updated = false;
 		if (\count($albumIds) > 0) {
@@ -324,7 +324,7 @@ class AlbumMapper extends BaseMapper {
 			$params = \array_merge([$coverFileId], $albumIds);
 			$result = $this->execute($sql, $params);
 			$updated = $result->rowCount() > 0;
-			$result->free();
+			$result->closeCursor();
 		}
 
 		return $updated;
@@ -339,7 +339,7 @@ class AlbumMapper extends BaseMapper {
 				WHERE `id` = ?';
 		$params = [$coverFileId, $albumId];
 		$result = $this->execute($sql, $params);
-		$result->free();
+		$result->closeCursor();
 	}
 
 	/**
@@ -367,7 +367,7 @@ class AlbumMapper extends BaseMapper {
 				WHERE `id` IN ' . $this->questionMarks($count);
 			$params = ArrayUtil::extractIds($albums);
 			$result = $this->execute($sql, $params);
-			$result->free();
+			$result->closeCursor();
 		}
 
 		return $albums;
@@ -403,7 +403,7 @@ class AlbumMapper extends BaseMapper {
 				'parentFolderId' => (int)$row['parent']
 			];
 		}
-		$result->free();
+		$result->closeCursor();
 
 		return $return;
 	}
@@ -420,7 +420,7 @@ class AlbumMapper extends BaseMapper {
 		$params = [$parentFolderId];
 		$result = $this->execute($imagesSql, $params);
 		$images = $result->fetchAll();
-		$result->free();
+		$result->closeCursor();
 		if (\count($images) > 0) {
 			$getImageRank = function($imageName) {
 				$coverNames = ['cover', 'albumart', 'album', 'front', 'folder'];
@@ -478,7 +478,7 @@ class AlbumMapper extends BaseMapper {
 		$params = [$artistId, $artistId];
 		$result = $this->execute($sql, $params);
 		$row = $result->fetch();
-		$result->free();
+		$result->closeCursor();
 		return (int)$row['count'];
 	}
 
@@ -494,7 +494,7 @@ class AlbumMapper extends BaseMapper {
 		$params = [$artistId];
 		$result = $this->execute($sql, $params);
 		$row = $result->fetch();
-		$result->free();
+		$result->closeCursor();
 		return (int)$row['count'];
 	}
 
