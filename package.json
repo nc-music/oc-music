@@ -11,7 +11,7 @@
 	"bugs": "https://github.com/owncloud/music/issues",
 	"dependencies": {
 		"@nextcloud/files": "^3.0.0",
-		"@nextcloud/sharing": "^0.2.4",
+		"@nextcloud/sharing": "^0.4.0",
 		"angular": "^1.8.3",
 		"angular-gettext": "^2.4.2",
 		"angular-route": "^1.8.3",
