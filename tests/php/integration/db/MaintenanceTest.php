@@ -9,12 +9,13 @@
  * @author Morris Jobke <hey@morrisjobke.de>
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
  * @copyright Morris Jobke 2013, 2014
- * @copyright Pauli Järvinen 2017 - 2021
+ * @copyright Pauli Järvinen 2017 - 2026
  */
 
 namespace OCA\Music\Db;
 
 use Doctrine\DBAL\Connection;
+use OCA\Music\AppFramework\Db\Result;
 
 class MaintenanceTest extends \PHPUnit\Framework\TestCase {
 
@@ -66,9 +67,9 @@ class MaintenanceTest extends \PHPUnit\Framework\TestCase {
 				->from($table)
 				->where('user_id = :user_id')
 				->setParameter('user_id', $user);
-			$stmt = $qb->execute();
-			$row = $stmt->fetch();
-			$stmt->closeCursor();
+			$result = new Result($qb->execute());
+			$row = $result->fetch();
+			$result->closeCursor();
 			$count = $row['count'];
 
 			$this->assertEquals(0, $count);

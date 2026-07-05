@@ -17,6 +17,7 @@ namespace OCA\Music\Db;
 use OCP\IDBConnection;
 
 use OCA\Music\AppFramework\Core\Logger;
+use OCA\Music\AppFramework\Db\Result;
 
 class Maintenance {
 
@@ -35,7 +36,7 @@ class Maintenance {
 	private function removeStrayScanningStatus() : int {
 		$sql = 'SELECT `user_id`, `data` FROM `*PREFIX*music_cache`
 				WHERE `key` = \'scanning\'';
-		$result = $this->db->executeQuery($sql);
+		$result = new Result($this->db->executeQuery($sql));
 		$rows = $result->fetchAll();
 		$result->closeCursor();
 
@@ -59,8 +60,9 @@ class Maintenance {
 	 */
 	private function scanningInProgress() : bool {
 		$sql = 'SELECT 1 FROM `*PREFIX*music_cache`	WHERE `key` = \'scanning\'';
-		$result = $this->db->executeQuery($sql);
+		$result = new Result($this->db->executeQuery($sql));
 		$row = $result->fetch();
+		$result->closeCursor();
 		return (bool)$row;
 	}
 

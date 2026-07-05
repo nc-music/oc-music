@@ -7,13 +7,14 @@
  * later. See the COPYING file.
  *
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
- * @copyright Pauli Järvinen 2017 - 2025
+ * @copyright Pauli Järvinen 2017 - 2026
  */
 
 namespace OCA\Music\Db;
 
 use OCP\IDBConnection;
 
+use OCA\Music\AppFramework\Db\Result;
 use OCA\Music\AppFramework\Db\UniqueConstraintViolationException;
 
 class Cache {
@@ -90,7 +91,7 @@ class Cache {
 	public function get(string $userId, string $key) : ?string {
 		$sql = 'SELECT `data` FROM `*PREFIX*music_cache`
 				WHERE `user_id` = ? AND `key` = ?';
-		$result = $this->db->executeQuery($sql, [$userId, $key]);
+		$result = new Result($this->db->executeQuery($sql, [$userId, $key]));
 		$rows = $result->fetchAll();
 		$result->closeCursor();
 
@@ -113,7 +114,7 @@ class Cache {
 			$params[] = $prefix . '%';
 		}
 
-		$result = $this->db->executeQuery($sql, $params);
+		$result = new Result($this->db->executeQuery($sql, $params));
 		$rows = $result->fetchAll();
 		$result->closeCursor();
 
@@ -126,7 +127,7 @@ class Cache {
 	public function getOwner(string $key, string $data) : ?string {
 		$sql = 'SELECT `user_id` FROM `*PREFIX*music_cache`
 				WHERE `key` = ? AND `data` = ?';
-		$result = $this->db->executeQuery($sql, [$key, $data]);
+		$result = new Result($this->db->executeQuery($sql, [$key, $data]));
 		$rows = $result->fetchAll();
 		$result->closeCursor();
 
