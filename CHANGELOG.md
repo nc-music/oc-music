@@ -6,31 +6,31 @@
 ### Changed
 - Subsonic API:
   * Set the "now playing" data locally and in the connected Last.fm account when the client calls `scrobble` with `submission=false`
-    [#112](https://github.com/nc-music/music/pull/112) @mattwellss
+    [nc-music#112](https://github.com/nc-music/music/pull/112) @mattwellss
   * If `scrobble` is called with multiple `id` values, some of which are unknown, then all the valid ones get recorded and unknown ones silently discarded (previously, songs were recorded one-by-one until hitting the unknown `id`, after which the rest got discarded)
 - Don't scrobble songs shorter than 30 seconds to Last.fm to comply with the service's guideline
-  [#116](https://github.com/nc-music/music/pull/116) @mattwellss
+  [nc-music#116](https://github.com/nc-music/music/pull/116) @mattwellss
 
 ### Fixed
 - Deprecation warnings printed on PHP 8.3+ while executing the Music background tasks
 - Web UI trying to load an invalid image URL upon page load
 - Some HLS-type radio streams not playing because URLs contained in `#EXT-X-*` headers were handled incorrectly
-  [#133](https://github.com/nc-music/music/issues/133)
+  [nc-music#133](https://github.com/nc-music/music/issues/133)
 - Scrobbling to Last.fm failing if the song was missing either track number or album name
-  [#134](https://github.com/nc-music/music/issues/134)
+  [nc-music#134](https://github.com/nc-music/music/issues/134)
 
 ## 2.5.2 - 2026-05-10
 
 ### Changed
 - Subsonic API:
   * Remove OpenSubsonic property `artists` from the album results as it was being used wrong (added in v2.5.0)
-    [#118](https://github.com/nc-music/music/issues/118)
+    [nc-music#118](https://github.com/nc-music/music/issues/118)
 
 ### Fixed
 - When no local album art available, the art from Last.fm was accidentally applied also to the artist list of the album details pane
 - Subsonic API:
   * Response of `getArtistInfo` and `getArtistInfo2` being malformed when no details available
-    [#129](https://github.com/nc-music/music/issues/129)
+    [nc-music#129](https://github.com/nc-music/music/issues/129)
   * XML responses of `getArtistInfo`, `getArtistInfo2`, `getAlbumInfo`, and `getAlbumInfo2` showing property `openSubsonic` as an element instead of attribute
 
 ## 2.5.1 - 2026-01-01
