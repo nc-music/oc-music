@@ -34,7 +34,7 @@
 	<repository type="git">https://github.com/owncloud/music.git</repository>
 	<dependencies>
 		<php min-version="7.4" max-version="8.4"/>
-		<owncloud min-version="10.5" max-version="10" />
+		<owncloud min-version="10.5" max-version="11" />
 		<nextcloud min-version="20" max-version="32" />
 	</dependencies>
 	<types>

@@ -20,10 +20,6 @@ jobs:
             php: 7.4
             db: sqlite
           - cloud: nextcloud
-            version: 31.0.8
-            php: 8.2
-            db: pgsql
-          - cloud: nextcloud
             version: 32.0.0
             php: 8.4
             db: mysql
@@ -35,6 +31,10 @@ jobs:
             version: 10.15.3
             php: 7.4
             db: mysql
+          - cloud: owncloud
+            version: daily-master
+            php: 8.3
+            db: pgsql
 
     steps:
     - name: Checkout repository

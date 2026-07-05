@@ -1,7 +1,7 @@
 <?php
 /**
  * @copyright Copyright (c) 2016, ownCloud, Inc.
- * @copyright Copyright (c) 2023 - 2025, Pauli Järvinen
+ * @copyright Copyright (c) 2023 - 2026, Pauli Järvinen
  *
  * @author Bernhard Posselt <dev@bernhard-posselt.com>
  * @author Christoph Wurst <christoph@winzerhof-wurst.at>
@@ -232,10 +232,9 @@ abstract class Mapper {
 	 * @param array $params the params which should replace the ? in the sql query
 	 * @param int $limit the maximum number of rows
 	 * @param int $offset from which row we want to start
-	 * @return \Doctrine\DBAL\Driver\Statement the database query result
 	 * @since 7.0.0
 	 */
-	protected function execute($sql, array $params=[], $limit=null, $offset=null) {
+	protected function execute($sql, array $params=[], $limit=null, $offset=null) : Result {
 		$query = $this->db->prepare($sql, $limit, $offset);
 
 		if ($this->isAssocArray($params)) {
@@ -252,9 +251,8 @@ abstract class Mapper {
 			}
 		}
 
-		$query->execute();
-
-		return $query;
+		$result = $query->execute();
+		return new Result(\is_object($result) ? $result : $query);
 	}
 
 	/**

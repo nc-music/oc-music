@@ -9,7 +9,7 @@
  * @author Morris Jobke <hey@morrisjobke.de>
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
  * @copyright Morris Jobke 2013, 2014
- * @copyright Pauli Järvinen 2017 - 2025
+ * @copyright Pauli Järvinen 2017 - 2026
  */
 
 namespace OCA\Music\BackgroundJob;
@@ -32,7 +32,7 @@ class Cleanup extends TimedJob {
 		$app = \OC::$server->query(Application::class);
 
 		$logger = $app->get(Logger::class);
-		$logger->debug('Run ' . \get_class());
+		$logger->debug('Run ' . static::class);
 
 		// remove orphaned entities
 		$app->get(Maintenance::class)->cleanUp();

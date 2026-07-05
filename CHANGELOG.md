@@ -1,3 +1,12 @@
+## [Unreleased]
+
+### Added
+- Support for ownCloud 11 (tested on 11.0.0-prealpha)
+
+### Fixed
+- Deprecation warnings printed on PHP 8.3+ while executing the Music background tasks
+- Web UI trying to load an invalid image URL upon page load
+
 ## 2.5.2 - 2026-05-10
 
 ### Changed

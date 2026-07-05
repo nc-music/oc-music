@@ -7,7 +7,7 @@
  * later. See the COPYING file.
  *
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
- * @copyright Pauli Järvinen 2017 - 2025
+ * @copyright Pauli Järvinen 2017 - 2026
  */
 
 namespace OCA\Music\Command;
@@ -26,20 +26,14 @@ class Cleanup extends Command {
 		parent::__construct();
 	}
 
-	/**
-	 * @return void
-	 */
-	protected function configure() {
+	protected function configure() : void {
 		$this
 			->setName('music:cleanup')
 			->setDescription('clean up orphaned DB entries (this happens also periodically on the background)')
 		;
 	}
 
-	/**
-	 * @return int
-	 */
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output) : int {
 		$output->writeln('Running cleanup task...');
 		$removedEntries = $this->maintenance->cleanUp();
 		$output->writeln("Removed entries: " . \json_encode($removedEntries));

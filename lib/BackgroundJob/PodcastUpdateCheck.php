@@ -7,7 +7,7 @@
  * later. See the COPYING file.
  *
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
- * @copyright Pauli Järvinen 2021 - 2025
+ * @copyright Pauli Järvinen 2021 - 2026
  */
 
 namespace OCA\Music\BackgroundJob;
@@ -30,7 +30,7 @@ class PodcastUpdateCheck extends TimedJob {
 		$app = \OC::$server->query(Application::class);
 
 		$logger = $app->get(Logger::class);
-		$logger->debug('Run ' . \get_class());
+		$logger->debug('Run ' . static::class);
 
 		$minInterval = (float)$app->get(IConfig::class)->getSystemValue('music.podcast_auto_update_interval', 24); // hours
 		// negative interval values can be used to disable the auto-update
