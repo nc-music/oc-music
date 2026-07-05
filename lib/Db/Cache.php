@@ -35,7 +35,7 @@ class Cache {
 		$sql = 'INSERT INTO `*PREFIX*music_cache`
 				(`user_id`, `key`, `data`) VALUES (?, ?, ?)';
 		$this->executeUpdate($sql, [$userId, $key, $data]);
-		return $this->db->lastInsertId('*PREFIX*music_cache');
+		return (int)$this->db->lastInsertId('*PREFIX*music_cache');
 	}
 
 	/**
