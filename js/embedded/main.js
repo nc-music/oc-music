@@ -37,7 +37,7 @@
 		// First, try to load the Nextcloud Files API. This works on NC28+ but not on NC27. On the other hand, 
 		// the call succeeds on ownCloud but the registration just does nothing there. Note that we can't wait
 		// for the page load to be finished before doing this because that would be too late for the registration
-		// and cause the issue https://github.com/owncloud/music/issues/1126.
+		// and cause the issue https://github.com/nc-music/oc-music/issues/1126.
 		import('@nextcloud/files').then(ncFiles => {
 			import('@nextcloud/sharing/public').then(ncSharingPublic => {
 				const sharingToken = ncSharingPublic.isPublicShare() ? ncSharingPublic.getSharingToken() : null;

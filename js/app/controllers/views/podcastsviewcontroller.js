@@ -149,7 +149,7 @@ angular.module('Music').controller('PodcastsViewController', [
 			if (containerWidth === 0) {
 				// During page load, the view container may not yet have a valid width. On Firefox on Ubuntu,
 				// the resize event with the valid width doesn't fire at all after the page load. Retry until
-				// a valid width is present. See https://github.com/owncloud/music/issues/1029.
+				// a valid width is present. See https://github.com/nc-music/oc-music/issues/1029.
 				$timeout(updateColumnLayout, 500);
 			} else {
 				let colWidth = 480;

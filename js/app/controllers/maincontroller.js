@@ -24,7 +24,7 @@ function ($rootScope, $scope, $timeout, $window, ArtistFactory,
 
 	// Create a global rule to use themed icons for folders everywhere, the default icon-folder is not themed on NC 25 and later.
 	// It happens sometimes (at least on Chrome), that OC.MimeType is not yet present when we come here (see 
-	// https://github.com/owncloud/music/issues/1137). In those cases, we need to postpone registering the folder style.
+	// https://github.com/nc-music/oc-music/issues/1137). In those cases, we need to postpone registering the folder style.
 	OCA.Music.Utils.executeOnceRefAvailable(() => OC.MimeType, (ocMimeType) => {
 		const folderStyle = document.createElement('style');
 		folderStyle.innerHTML = `#app-view .icon-folder { background-image: url(${ocMimeType.getIconUrl('dir')}) }`;

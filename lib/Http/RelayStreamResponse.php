@@ -46,7 +46,7 @@ class RelayStreamResponse extends Response implements ICallbackResponse {
 		/**
 		 * Copy response headers from the original response to our response. However, RFC 2616 defines some headers as "hop-by-hop"
 		 * and these should never be forwarded by proxies so strip such headers. At least the header `Transfer-Encoding: chunked`
-		 * seems to break the response totally (within Nextcloud or Apache?) if forwarded, see https://github.com/owncloud/music/issues/1268.
+		 * seems to break the response totally (within Nextcloud or Apache?) if forwarded, see https://github.com/nc-music/oc-music/issues/1268.
 		 *
 		 * HTTP headers are case-insensitive; lower case all the headers for easier handling.
 		 */

@@ -387,7 +387,7 @@ angular.module('Music').controller('NavigationController', [
 		// Subsequently, ending the drag closes the navigation pane.
 		// It occasionally happens (at least on Chrome) that the navigation toggle is not yet
 		// present when this controller is initialized. In those cases, the related logic
-		// is injected a bit later. See https://github.com/owncloud/music/issues/1137.
+		// is injected a bit later. See https://github.com/nc-music/oc-music/issues/1137.
 		OCA.Music.Utils.executeOnceRefAvailable(
 			() => document.getElementById('app-navigation-toggle'),
 			(navToggle) => {

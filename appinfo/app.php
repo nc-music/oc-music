@@ -14,7 +14,7 @@
 
 /**
  * Bootstrapping for ownCloud. The release.sh script will remove this file from
- * the Nextcloud releases. See https://github.com/owncloud/music/issues/1043.
+ * the Nextcloud releases. See https://github.com/nc-music/oc-music/issues/1043.
  */
 
 namespace OCA\Music\AppInfo;

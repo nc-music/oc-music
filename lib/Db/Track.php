@@ -312,7 +312,7 @@ class Track extends Entity {
 			'type' => 'music',
 			'mediaType' => 'song', // OpenSubsonic
 			'created' => Util::formatZuluDateTime($this->getCreated()),
-			'track' => $this->getAdjustedTrackNumber(false), // DSub would get confused of playlist numbering, https://github.com/owncloud/music/issues/994
+			'track' => $this->getAdjustedTrackNumber(false), // DSub would get confused of playlist numbering, https://github.com/nc-music/oc-music/issues/994
 			'starred' => Util::formatZuluDateTime($this->getStarred()),
 			'userRating' => $this->getRating() ?: null,
 			'averageRating' => $this->getRating() ?: null,

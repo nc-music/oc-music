@@ -13,4 +13,4 @@
 
 # Other contributors
 
-See https://github.com/owncloud/music/graphs/contributors for all contributors.
+See https://github.com/nc-music/oc-music/graphs/contributors for all contributors.

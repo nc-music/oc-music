@@ -191,7 +191,7 @@
 
 	<h2 translate>Admin</h2>
 	<div>
-		<p translate translate-params-filename="'<cloud root>/config/config.php'" translate-params-url="'https://github.com/owncloud/music/wiki/Admin-settings'">
+		<p translate translate-params-filename="'<cloud root>/config/config.php'" translate-params-url="'https://github.com/nc-music/oc-music/wiki/Admin-settings'">
 			There is no settings UI for the server-wide settings of the Music app but some settings are available by adding specific key-value pairs to the file <samp>{{filename}}</samp>. The available keys are documented <a href="{{url}}" target="_blank">here</a>.
 		</p>
 	</div>
@@ -202,7 +202,7 @@
 			<img class="logotype" src="<?php \OCA\Music\Utility\HtmlUtil::printSvgPath('music_logotype_horizontal') ?>" />
 			<br/>
 			<span translate>Music</span> <span>v{{ settings.appVersion }}</span>
-			(<a href="https://github.com/owncloud/music/releases" target="_blank" translate>version history</a>)
+			(<a href="https://github.com/nc-music/oc-music/releases" target="_blank" translate>version history</a>)
 		</p>
 		<p translate>
 			Please report any bugs and issues to the <a href="{{issueTrackerUrl}}" target="_blank">issue tracker</a>

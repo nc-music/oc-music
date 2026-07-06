@@ -59,7 +59,7 @@ class TrackMapper extends BaseMapper {
 		switch ($sortBy) {
 			case SortBy::Parent:
 				$dir = $invertSort ? 'DESC' : 'ASC';
-				// Note: the alternative form "LOWER(`artist_name`) wouldn't work on PostgreSQL, see https://github.com/owncloud/music/issues/1046 for a similar case
+				// Note: the alternative form "LOWER(`artist_name`) wouldn't work on PostgreSQL, see https://github.com/nc-music/oc-music/issues/1046 for a similar case
 				return "ORDER BY LOWER(`artist`.`name`) $dir, LOWER(`title`) $dir";
 			case SortBy::PlayCount:
 				$dir = $invertSort ? 'ASC' : 'DESC';

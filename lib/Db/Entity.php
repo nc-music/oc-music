@@ -66,7 +66,7 @@ class Entity extends \OCP\AppFramework\Db\Entity {
 		 * we have created a new Entity and the new value is the same as the default value.
 		 * We may still use that new Entity with Mapper::update with the intention to change
 		 * that field on an existing row to its default value. This is what caused
-		 * https://github.com/owncloud/music/issues/1251 and probably some other subtle bugs, too.
+		 * https://github.com/nc-music/oc-music/issues/1251 and probably some other subtle bugs, too.
 		 */
 		$this->markFieldUpdated($name);
 	}

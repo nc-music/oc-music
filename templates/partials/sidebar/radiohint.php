@@ -11,7 +11,7 @@
 
 		<p translate translate-params-url="'https://www.radio-browser.info/'">To find radio streams, you may use the <a href="{{url}}" target="_blank">Community Radio Browser</a>. There, you can find channels e.g. by name, language, or style. You may save the results as PLS and follow the instructions above to import them to the Music app.</p>
 
-		<p translate translate-params-url="'https://github.com/owncloud/music/wiki/Internet-radio-trouble-shooting'">In case your stream does not play, see <a href="{{url}}" target="_blank">troubleshooting</a></p>
+		<p translate translate-params-url="'https://github.com/nc-music/oc-music/wiki/Internet-radio-trouble-shooting'">In case your stream does not play, see <a href="{{url}}" target="_blank">troubleshooting</a></p>
 	</div>
 
 </div>

@@ -52,7 +52,7 @@ class AlbumMapper extends BaseMapper {
 	 */
 	protected function formatSortingClause(int $sortBy, bool $invertSort = false) : ?string {
 		if ($sortBy === SortBy::Parent) {
-			// Note: the alternative form "LOWER(`album_artist_name`) wouldn't work on PostgreSQL, see https://github.com/owncloud/music/issues/1046
+			// Note: the alternative form "LOWER(`album_artist_name`) wouldn't work on PostgreSQL, see https://github.com/nc-music/oc-music/issues/1046
 			$dir = $invertSort ? 'DESC' : 'ASC';
 			return "ORDER BY LOWER(`artist`.`name`) $dir, LOWER(`*PREFIX*music_albums`.`name`) $dir";
 		} else {

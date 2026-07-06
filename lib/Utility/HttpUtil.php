@@ -62,7 +62,7 @@ class HttpUtil {
 
 	/**
 	 * Resolve redirections with a custom logic. The platform solution doesn't always work correctly, especially with
-	 * unusually long header lines, see https://github.com/owncloud/music/issues/1209.
+	 * unusually long header lines, see https://github.com/nc-music/oc-music/issues/1209.
 	 * @param resource $context
 	 * @return array{url: string, status_code: int, status_msg: string, headers: array<string, string>}
 	 * 					The final URL and the headers from the URL, after any redirections. @see HttpUtil::parseHeaders

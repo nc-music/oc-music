@@ -29,9 +29,9 @@
 	<screenshot>https://user-images.githubusercontent.com/8565946/132128618-3ddf733c-87ea-4900-8913-d4ccd24bf798.png</screenshot>
 	<screenshot>https://user-images.githubusercontent.com/8565946/132134806-4da9e586-3b54-422a-8f11-d45ea774ed42.png</screenshot>
 	<screenshot>https://user-images.githubusercontent.com/8565946/132128626-712bf745-691e-4f03-83d7-20cbc4dd37d1.png</screenshot>
-	<website>https://github.com/owncloud/music</website>
-	<bugs>https://github.com/owncloud/music/issues</bugs>
-	<repository type="git">https://github.com/owncloud/music.git</repository>
+	<website>https://github.com/nc-music/oc-music</website>
+	<bugs>https://github.com/nc-music/oc-music/issues</bugs>
+	<repository type="git">https://github.com/nc-music/oc-music.git</repository>
 	<dependencies>
 		<php min-version="7.4" max-version="8.4"/>
 		<owncloud min-version="10.5" max-version="11" />

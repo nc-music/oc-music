@@ -171,7 +171,7 @@ class Maintenance {
 	 */
 	private function removeObsoleteArtists() : int {
 		// Note: This originally used the NOT IN operation but that was terribly inefficient on PostgreSQL,
-		// see https://github.com/owncloud/music/issues/997
+		// see https://github.com/nc-music/oc-music/issues/997
 		return $this->db->executeUpdate(
 			'DELETE FROM `*PREFIX*music_artists`
 				WHERE NOT EXISTS (SELECT 1 FROM `*PREFIX*music_albums` WHERE `*PREFIX*music_artists`.`id` = `album_artist_id` LIMIT 1)
@@ -204,7 +204,7 @@ class Maintenance {
 		$removedScanFlags = $this->removeStrayScanningStatus();
 
 		// Don't clean during an ongoing scan. This may cause the scanning to fail with a deadlock error on MariaDB,
-		// see https://github.com/owncloud/music/issues/918. It could also remove a just scanned album row before the
+		// see https://github.com/nc-music/oc-music/issues/918. It could also remove a just scanned album row before the
 		// contained track rows have been added to the DB, which would have happened a few milliseconds later.
 		$skipDuringScan = $this->scanningInProgress();
 		if (!$skipDuringScan) {

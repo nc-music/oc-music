@@ -16,9 +16,9 @@ angular.module('Music').controller('SettingsViewController', [
 
 		$rootScope.currentView = $scope.getViewIdFromUrl();
 
-		$scope.issueTrackerUrl = 'https://github.com/owncloud/music/issues';
-		$scope.ampacheClientsUrl = 'https://github.com/owncloud/music/wiki/Ampache';
-		$scope.subsonicClientsUrl = 'https://github.com/owncloud/music/wiki/Subsonic';
+		$scope.issueTrackerUrl = 'https://github.com/nc-music/oc-music/issues';
+		$scope.ampacheClientsUrl = 'https://github.com/nc-music/oc-music/wiki/Ampache';
+		$scope.subsonicClientsUrl = 'https://github.com/nc-music/oc-music/wiki/Subsonic';
 
 		$scope.desktopNotificationsSupported = (typeof Notification !== 'undefined');
 

@@ -62,7 +62,7 @@ class ExtractorGetID3 implements Extractor {
 
 		try {
 			// It would be pointless to try to analyze 0-byte files and it may cause problems when
-			// the file is stored on a SMB share, see https://github.com/owncloud/music/issues/600
+			// the file is stored on a SMB share, see https://github.com/nc-music/oc-music/issues/600
 			if ($file->getSize() > 0) {
 				$metadata = $this->doExtract($file);
 			}

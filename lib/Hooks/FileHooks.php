@@ -155,7 +155,7 @@ class FileHooks {
 		// We never want to prevent the actual file operation since our reactions to them are anyway non-crucial.
 		// Especially during a server version update involving also Music app version update, the system may be
 		// running a partially updated application version and that may lead to unexpected fatal errors, see
-		// https://github.com/owncloud/music/issues/1231.
+		// https://github.com/nc-music/oc-music/issues/1231.
 		try {
 			try {
 				$func();
