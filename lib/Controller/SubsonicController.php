@@ -1245,7 +1245,7 @@ class SubsonicController extends ApiController {
 		$apiTrack = [];
 		try {
 			$nowPlaying = $this->trackBusinessLayer->getNowPlaying($this->user());
-			if ($nowPlaying !== null) {;
+			if ($nowPlaying !== null) {
 				$now = new \DateTime();
 				$apiTrack = $this->trackToApi($nowPlaying['track']);
 				$apiTrack['username'] = $this->user();
@@ -1452,7 +1452,7 @@ class SubsonicController extends ApiController {
 		$rootFolderId = $this->librarySettings->getFolder($this->user())->getId();
 		$parentFolderId = $folder->getParent()->getId();
 		if ($rootFolderId != $parentFolderId) {
-			$content['parent'] = 'folder-' . $parentFolderId;
+			$content['directory']['parent'] = 'folder-' . $parentFolderId;
 		}
 
 		return $content;

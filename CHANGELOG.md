@@ -21,6 +21,8 @@
   [nc-music#133](https://github.com/nc-music/music/issues/133)
 - Scrobbling to Last.fm failing if the song was missing either track number or album name
   [nc-music#134](https://github.com/nc-music/music/issues/134)
+- Subsonic API:
+  * Attribute `parent` misplaced in the response of `getMusicDirectory` when browsing by file system folders
 
 ## 2.5.2 - 2026-05-10
 
