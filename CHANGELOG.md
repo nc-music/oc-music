@@ -23,6 +23,7 @@
   [nc-music#134](https://github.com/nc-music/music/issues/134)
 - Subsonic API:
   * Attribute `parent` misplaced in the response of `getMusicDirectory` when browsing by file system folders
+  * Endpoints `savePlayQueue` and `savePlayQueueByIndex` not allowing an empty list to clear the queue
 
 ## 2.5.2 - 2026-05-10
 

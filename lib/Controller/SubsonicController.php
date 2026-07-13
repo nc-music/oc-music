@@ -1205,7 +1205,7 @@ class SubsonicController extends ApiController {
 			throw new SubsonicException('Parameter `currentIndex` is required for a non-empty queue', 10);
 		}
 
-		if ($currentIndex < 0 || $currentIndex >= \count($id)) {
+		if ($currentIndex !== null && ($currentIndex < 0 || $currentIndex >= \count($id))) {
 			// The error code 10 doesn't actually make sense here but it's mandated by the OpenSubsonic API specification
 			throw new SubsonicException('Parameter `currentIndex` must be a valid index within `id`', 10);
 		}
