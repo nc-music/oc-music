@@ -655,7 +655,7 @@ class SubsonicController extends ApiController {
 	 * @SubsonicAPI
 	 */
 	protected function createPlaylist(?string $name, ?string $playlistId, array $songId) : array {
-		$songIds = \array_map('self::ripIdPrefix', $songId);
+		$songIds = \array_map([self::class, 'ripIdPrefix'], $songId);
 
 		// If playlist ID has been passed, then this method actually updates an existing list instead of creating a new one.
 		// The updating can't be used to rename the list, even if both ID and name are given (this is how the real Subsonic works, too).
@@ -677,7 +677,7 @@ class SubsonicController extends ApiController {
 	 * @SubsonicAPI
 	 */
 	protected function updatePlaylist(int $playlistId, ?string $name, ?string $comment, array $songIdToAdd, array $songIndexToRemove) : array {
-		$songIdsToAdd = \array_map('self::ripIdPrefix', $songIdToAdd);
+		$songIdsToAdd = \array_map([self::class, 'ripIdPrefix'], $songIdToAdd);
 		$songIndicesToRemove = \array_map('intval', $songIndexToRemove);
 		$userId = $this->user();
 
@@ -1305,10 +1305,10 @@ class SubsonicController extends ApiController {
 	 */
 	private static function parseStarringParameters(array $ids, array $albumIds, array $artistIds) : array {
 		// album IDs from newer clients
-		$albumIds = \array_map('self::ripIdPrefix', $albumIds);
+		$albumIds = \array_map([self::class, 'ripIdPrefix'], $albumIds);
 
 		// artist IDs from newer clients
-		$artistIds = \array_map('self::ripIdPrefix', $artistIds);
+		$artistIds = \array_map([self::class, 'ripIdPrefix'], $artistIds);
 
 		// Song IDs from newer clients and song/folder/album/artist IDs from older clients are all packed in $ids.
 		// Also podcast IDs may come there; that is not documented part of the API but at least DSub does that.
