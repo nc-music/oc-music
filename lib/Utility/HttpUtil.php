@@ -7,7 +7,7 @@
  * later. See the COPYING file.
  *
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
- * @copyright Pauli Järvinen 2022 - 2025
+ * @copyright Pauli Järvinen 2022 - 2026
  */
 
 namespace OCA\Music\Utility;
@@ -95,7 +95,7 @@ class HttpUtil {
 	 */
 	private static function getUrlHeaders(string $url, $context) : array {
 		$result = null;
-		if (self::isUrlSchemeOneOf($url, self::ALLOWED_SCHEMES)) {
+		if (self::isUrlAllowed($url)) {
 			// the type of the second parameter of get_header has changed in PHP 8.0
 			$associative = \version_compare(\phpversion(), '8.0', '<') ? 0 : false;
 			$rawHeaders = @\get_headers($url, /** @scrutinizer ignore-type */ $associative, $context);
@@ -106,7 +106,7 @@ class HttpUtil {
 				$result = ['status_code' => Http::STATUS_SERVICE_UNAVAILABLE, 'status_msg' => 'Error connecting the URL', 'headers' => ['Content-Length' => '0']];
 			}
 		} else {
-			$result = ['status_code' => Http::STATUS_FORBIDDEN, 'status_msg' => 'URL scheme not allowed', 'headers' => ['Content-Length' => '0']];
+			$result = ['status_code' => Http::STATUS_FORBIDDEN, 'status_msg' => 'URL scheme or host not allowed', 'headers' => ['Content-Length' => '0']];
 		}
 		return $result;
 	}
@@ -173,17 +173,20 @@ class HttpUtil {
 		return $opts;
 	}
 
-	/** @param string[] $schemes */
-	private static function isUrlSchemeOneOf(string $url, array $schemes) : bool {
-		$url = \mb_strtolower($url);
+	private static function isUrlAllowed(string $url) : bool {
+		$allowed = false;
 
-		foreach ($schemes as $scheme) {
-			if (StringUtil::startsWith($url, $scheme . '://')) {
-				return true;
-			}
+		$parsedUrl = \parse_url($url);
+		$scheme = $parsedUrl['scheme'] ?? '';
+		$validScheme = \in_array(\mb_strtolower($scheme), self::ALLOWED_SCHEMES);
+
+		if ($validScheme) {
+			$ip = \gethostbyname($parsedUrl['host'] ?? '');
+			$ip = \filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+			$allowed = ($ip !== false);
 		}
 
-		return false;
+		return $allowed;
 	}
 
 	public static function setClientCachingDays(Response $httpResponse, int $days) : void {
