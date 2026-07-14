@@ -1221,7 +1221,7 @@ class SubsonicController extends ApiController {
 		];
 
 		$playQueueJson = \json_encode($playQueue, \JSON_THROW_ON_ERROR);
-		$this->configManager->setUserValue($this->userId, $this->appName, 'play_queue', $playQueueJson);
+		$this->configManager->setUserValue($this->user(), $this->appName, 'play_queue', $playQueueJson);
 
 		return [];
 	}
@@ -1242,7 +1242,7 @@ class SubsonicController extends ApiController {
 	protected function getNowPlaying() : array {
 		// Note: This is documented to return latest play of all users on the server but we don't want to
 		// provide access to other people's data => Always return just this user's data.
-		$apiTrack = [];
+		$apiTracks = [];
 		try {
 			$nowPlaying = $this->trackBusinessLayer->getNowPlaying($this->user());
 			if ($nowPlaying !== null) {
@@ -1251,12 +1251,13 @@ class SubsonicController extends ApiController {
 				$apiTrack['username'] = $this->user();
 				$apiTrack['minutesAgo'] = (int)(($now->getTimestamp() - $nowPlaying['timeOfPlay']) / 60);
 				$apiTrack['playerId'] = 0; // dummy
+				$apiTracks[] = $apiTrack;
 			}
 		} catch (BusinessLayerException $e) {
 			$this->logger->warning($e->getMessage());
 		}
 
-		return ['nowPlaying' => ['entry' => [$apiTrack]]];
+		return ['nowPlaying' => ['entry' => $apiTracks]];
 	}
 
 	/**
