@@ -52,7 +52,7 @@ class BogusTrackRemoval implements IRepairStep {
 
 	private function removePlaylistFiles() : int {
 		// Find and delete tracks with mime audio/mpegurl and audio/x-scpls.
-		// This may leave some stray albums and artists in the DB but that is not a major probelm
+		// This may leave some stray albums and artists in the DB but that is not a major problem
 		// since the background cleanup task should get rid of those, eventually.
 		$sql = "DELETE FROM `*PREFIX*music_tracks` WHERE `mimetype` = 'audio/mpegurl' OR `mimetype` = 'audio/x-scpls'";
 		return $this->db->executeUpdate($sql);

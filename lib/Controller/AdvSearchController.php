@@ -91,7 +91,7 @@ class AdvSearchController extends Controller {
 		$rules = \json_decode($rules, true);
 
 		foreach ($rules as $rule) {
-			if (empty($rule['rule'] || empty($rule['operator'] || !isset($rule['input'])))) {
+			if (empty($rule['rule']) || empty($rule['operator']) || !isset($rule['input'])) {
 				return new ErrorResponse(Http::STATUS_BAD_REQUEST, 'Invalid search rule');
 			}
 		}
