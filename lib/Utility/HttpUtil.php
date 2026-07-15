@@ -28,7 +28,7 @@ class HttpUtil {
 	 */
 	public static function loadFromUrl(string $url, ?int $maxLength=null, ?int $timeout_s=null) : array {
 		$context = self::createContext($timeout_s);
-		$resolved = self::resolveRedirections($url, $context); // handles also checking for allowed URL schemes
+		$resolved = self::resolveRedirections($url, $context); // handles also checking for allowed URL schemes and IP ranges
 
 		$status_code = $resolved['status_code'];
 		if ($status_code >= 200 && $status_code < 300) {
@@ -180,10 +180,28 @@ class HttpUtil {
 		$scheme = $parsedUrl['scheme'] ?? '';
 		$validScheme = \in_array(\mb_strtolower($scheme), self::ALLOWED_SCHEMES);
 
-		if ($validScheme) {
-			$ip = \gethostbyname($parsedUrl['host'] ?? '');
-			$ip = \filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
-			$allowed = ($ip !== false);
+		if ($validScheme && !empty($parsedUrl['host'])) {
+			// The host may be either a domain name or an IP address
+			$ip = \filter_var($parsedUrl['host'], FILTER_VALIDATE_IP);
+			if ($ip !== false) {
+				// The host is an IP address, check that it is a public IP address
+				$allowed = \filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false;
+			} else {
+				// The host is a domain name, resolve it to IP addresses and check that all of them are public IP addresses.
+				// Any of these IP addresses may be used when connecting to the host.
+				$ipRecords = \dns_get_record($parsedUrl['host'], DNS_A + DNS_AAAA);
+				if (!empty($ipRecords)) {
+					$allowed = true;
+					foreach ($ipRecords as $record) {
+						$ip = $record['ip'] ?? $record['ipv6'] ?? '';
+						$ip = \filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+						if ($ip === false) {
+							$allowed = false;
+							break;
+						}
+					}
+				}
+			}
 		}
 
 		return $allowed;
