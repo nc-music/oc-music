@@ -15,6 +15,7 @@
 - Periodically refresh "Now playing" song to Last.fm while playing (Last.fm forgets the song after 4 minutes which was an issue on longer songs or when the song was paused)
 
 ### Fixed
+- Vulnerability [GHSA-frmc-frvc-h5p6](https://github.com/nc-music/oc-music/security/advisories/GHSA-frmc-frvc-h5p6)
 - Deprecation warnings printed on PHP 8.3+ while executing the Music background tasks
 - Web UI trying to load an invalid image URL upon page load
 - Some HLS-type radio streams not playing because URLs contained in `#EXT-X-*` headers were handled incorrectly
