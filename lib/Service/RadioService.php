@@ -9,7 +9,7 @@
  * @author Moahmed-Ismail MEJRI <imejri@hotmail.com>
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
  * @copyright Moahmed-Ismail MEJRI 2022
- * @copyright Pauli Järvinen 2022 - 2025
+ * @copyright Pauli Järvinen 2022 - 2026
  */
 
 namespace OCA\Music\Service;
@@ -48,34 +48,6 @@ class RadioService {
 			}
 		}
 		return null;
-	}
-
-	private static function parseStreamUrl(string $url) : array {
-		$ret = [];
-		$parse_url = \parse_url($url);
-
-		$ret['port'] = 80;
-		if (isset($parse_url['port'])) {
-			$ret['port'] = $parse_url['port'];
-		} elseif ($parse_url['scheme'] == "https") {
-			$ret['port'] = 443;
-		}
-
-		$ret['scheme'] = $parse_url['scheme'];
-		$ret['hostname'] = $parse_url['host'];
-		$ret['pathname'] = $parse_url['path'] ?? '/';
-
-		if (isset($parse_url['query'])) {
-			$ret['pathname'] .= "?" . $parse_url['query'];
-		}
-
-		if ($parse_url['scheme'] == "https") {
-			$ret['sockAddress'] = "ssl://" . $ret['hostname'];
-		} else {
-			$ret['sockAddress'] = $ret['hostname'];
-		}
-
-		return $ret;
 	}
 
 	/**
@@ -169,7 +141,7 @@ class RadioService {
 				return null;
 			} else {
 				// There may be one or multiple sources and the structure is slightly different in these two cases.
-				// In case there are multiple, try to found the source with a matching stream URL.
+				// In case there are multiple, try to find the source with a matching stream URL.
 				if (\is_int(\key($source))) {
 					// multiple sources
 					foreach ($source as $sourceItem) {
@@ -193,66 +165,43 @@ class RadioService {
 		});
 	}
 
-	public function readIcyMetadata(string $streamUrl, int $maxattempts, int $maxredirect) : ?array {
+	public function readIcyMetadata(string $streamUrl, int $maxAttempts) : ?array {
 		$timeout = 10;
 		$result = null;
-		$pUrl = self::parseStreamUrl($streamUrl);
-		if ($pUrl['sockAddress'] && $pUrl['port']) {
-			$fp = \fsockopen($pUrl['sockAddress'], $pUrl['port'], $errno, $errstr, $timeout);
-			if ($fp !== false) {
-				$out = "GET " . $pUrl['pathname'] . " HTTP/1.1\r\n";
-				$out .= "Host: ". $pUrl['hostname'] . "\r\n";
-				$out .= "Accept: */*\r\n";
-				$out .= HttpUtil::userAgentHeader() . "\r\n";
-				$out .= "Icy-MetaData: 1\r\n";
-				$out .= "Connection: Close\r\n\r\n";
-				\fwrite($fp, $out);
-				\stream_set_timeout($fp, $timeout);
 
-				$header = \fread($fp, 1024);
-				$headers = \explode("\n", $header);
+		$reqHeaders = [
+			'Accept' => '*/*',
+			'Icy-MetaData' => '1',
+			'Connection' => 'Close',
+		];
+		$context = HttpUtil::createContext($timeout, $reqHeaders);
+		$resolved = HttpUtil::resolveRedirections($streamUrl, $context);
 
-				if (\strpos($headers[0], "200 OK") !== false) {
-					$interval = self::findStrFollowing($headers, "icy-metaint:") ?? '0';
-					$interval = (int)$interval;
+		// If the response headers contain any "icy-" headers, then this is an ICY stream and we can try to read the metadata from it.
+		if ($resolved['status_code'] >= 200 && $resolved['status_code'] < 300
+			&& ArrayUtil::find($resolved['headers'], fn($v, $k) => StringUtil::startsWith($k, 'icy-')) !== null) {
 
-					if ($interval > 0 && $interval <= 64*1024) {
-						$result = [
-							'type' => 'icy',
-							'title' => null, // fetched below
-							'station' => self::findStrFollowing($headers, 'icy-name:'),
-							'description' => self::findStrFollowing($headers, 'icy-description:'),
-							'homepage' => self::findStrFollowing($headers, 'icy-url:'),
-							'genre' => self::findStrFollowing($headers, 'icy-genre:'),
-							'bitrate' => self::findStrFollowing($headers, 'icy-br:')
-						];
+			$result = [
+				'type' => 'icy',
+				'title' => null, // fetched below
+				'station' => $resolved['headers']['icy-name'] ?? null,
+				'description' => $resolved['headers']['icy-description'] ?? null,
+				'homepage' => $resolved['headers']['icy-url'] ?? null,
+				'genre' => $resolved['headers']['icy-genre'] ?? null,
+				'bitrate' => $resolved['headers']['icy-br'] ?? null
+			];
 
-						$attempts = 0;
-						while ($attempts < $maxattempts && empty($result['title'])) {
-							$bytesToSkip = $interval;
-							if ($attempts === 0) {
-								// The first chunk containing the header may also already contain the beginning of the body,
-								// but this depends on the case. Subtract the body bytes which we already got.
-								$headerEndPos = \strpos($header, "\r\n\r\n") + 4;
-								$bytesToSkip -= \strlen($header) - $headerEndPos;
-							}
-
-							\fseek($fp, $bytesToSkip, SEEK_CUR);
-
-							$result['title'] = self::parseTitleFromStreamMetadata($fp);
-
-							$attempts++;
-						}
+			$interval = (int)($resolved['headers']['icy-metaint'] ?? '0');
+			if ($interval > 0 && $interval <= 64*1024) {
+				$fp = \fopen($resolved['url'], 'rb', false, $context);
+				if ($fp !== false) {
+					$attempts = 0;
+					while ($attempts < $maxAttempts && empty($result['title'])) {
+						\fseek($fp, $interval, SEEK_CUR);
+						$result['title'] = self::parseTitleFromStreamMetadata($fp);
+						$attempts++;
 					}
 					\fclose($fp);
-				} else {
-					\fclose($fp);
-					if ($maxredirect > 0 && \strpos($headers[0], "302 Found") !== false) {
-						$location = self::findStrFollowing($headers, "Location:");
-						if ($location) {
-							$result = $this->readIcyMetadata($location, $maxattempts, $maxredirect-1);
-						}
-					}
 				}
 			}
 		}
