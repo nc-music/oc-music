@@ -234,5 +234,5 @@
 #music-user #sponsor-link .icon {
 	display: inline-block;
 	background-size: contain;
-	vertical-align: center;
+	vertical-align: text-bottom;
 }
