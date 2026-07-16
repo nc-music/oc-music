@@ -13,6 +13,8 @@
 - Record a track played only if at least 50 % or 4 minutes has been played, to comply with Last.fm's guideline. Mark the track immediately as "playing" on the server.
   * This influences only the Music app's own web UI, the behavior of Subsonic and Ampache clients may vary
 - Periodically refresh "Now playing" song to Last.fm while playing (Last.fm forgets the song after 4 minutes which was an issue on longer songs or when the song was paused)
+- Attempt to restart the playing radio stream if it abruptly ends
+  [nc-music#89](https://github.com/nc-music/music/issues/89)
 
 ### Fixed
 - Vulnerability [GHSA-frmc-frvc-h5p6](https://github.com/nc-music/oc-music/security/advisories/GHSA-frmc-frvc-h5p6)

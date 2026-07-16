@@ -123,7 +123,10 @@ function ($scope, $rootScope, playQueueService, Audio, gettextCatalog, Restangul
 
 	function onEnd() {
 		scrobbleCurrentTrackIfAppropriate();
-		if ($scope.repeat === 'one') {
+		if ($scope.currentTrack?.type === 'radio') {
+			console.warn('Radio stream ended, attempt to restart');
+			setCurrentTrack(playQueueService.getCurrentTrack());
+		} else if ($scope.repeat === 'one') {
 			scrobblePending = true;
 			$scope.player.seek(0);
 			$scope.player.play();
