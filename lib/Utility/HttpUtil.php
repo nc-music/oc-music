@@ -7,7 +7,7 @@
  * later. See the COPYING file.
  *
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
- * @copyright Pauli Järvinen 2022 - 2025
+ * @copyright Pauli Järvinen 2022 - 2026
  */
 
 namespace OCA\Music\Utility;
@@ -28,7 +28,7 @@ class HttpUtil {
 	 */
 	public static function loadFromUrl(string $url, ?int $maxLength=null, ?int $timeout_s=null) : array {
 		$context = self::createContext($timeout_s);
-		$resolved = self::resolveRedirections($url, $context); // handles also checking for allowed URL schemes
+		$resolved = self::resolveRedirections($url, $context); // handles also checking for allowed URL schemes and IP ranges
 
 		$status_code = $resolved['status_code'];
 		if ($status_code >= 200 && $status_code < 300) {
@@ -95,7 +95,7 @@ class HttpUtil {
 	 */
 	private static function getUrlHeaders(string $url, $context) : array {
 		$result = null;
-		if (self::isUrlSchemeOneOf($url, self::ALLOWED_SCHEMES)) {
+		if (self::isUrlAllowed($url)) {
 			// the type of the second parameter of get_header has changed in PHP 8.0
 			$associative = \version_compare(\phpversion(), '8.0', '<') ? 0 : false;
 			$rawHeaders = @\get_headers($url, /** @scrutinizer ignore-type */ $associative, $context);
@@ -106,7 +106,7 @@ class HttpUtil {
 				$result = ['status_code' => Http::STATUS_SERVICE_UNAVAILABLE, 'status_msg' => 'Error connecting the URL', 'headers' => ['Content-Length' => '0']];
 			}
 		} else {
-			$result = ['status_code' => Http::STATUS_FORBIDDEN, 'status_msg' => 'URL scheme not allowed', 'headers' => ['Content-Length' => '0']];
+			$result = ['status_code' => Http::STATUS_FORBIDDEN, 'status_msg' => 'URL scheme or host not allowed', 'headers' => ['Content-Length' => '0']];
 		}
 		return $result;
 	}
@@ -173,17 +173,38 @@ class HttpUtil {
 		return $opts;
 	}
 
-	/** @param string[] $schemes */
-	private static function isUrlSchemeOneOf(string $url, array $schemes) : bool {
-		$url = \mb_strtolower($url);
+	private static function isUrlAllowed(string $url) : bool {
+		$allowed = false;
 
-		foreach ($schemes as $scheme) {
-			if (StringUtil::startsWith($url, $scheme . '://')) {
-				return true;
+		$parsedUrl = \parse_url($url);
+		$scheme = $parsedUrl['scheme'] ?? '';
+		$validScheme = \in_array(\mb_strtolower($scheme), self::ALLOWED_SCHEMES);
+
+		if ($validScheme && !empty($parsedUrl['host'])) {
+			// The host may be either a domain name or an IP address
+			$ip = \filter_var($parsedUrl['host'], FILTER_VALIDATE_IP);
+			if ($ip !== false) {
+				// The host is an IP address, check that it is a public IP address
+				$allowed = \filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false;
+			} else {
+				// The host is a domain name, resolve it to IP addresses and check that all of them are public IP addresses.
+				// Any of these IP addresses may be used when connecting to the host.
+				$ipRecords = \dns_get_record($parsedUrl['host'], DNS_A + DNS_AAAA);
+				if (!empty($ipRecords)) {
+					$allowed = true;
+					foreach ($ipRecords as $record) {
+						$ip = $record['ip'] ?? $record['ipv6'] ?? '';
+						$ip = \filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+						if ($ip === false) {
+							$allowed = false;
+							break;
+						}
+					}
+				}
 			}
 		}
 
-		return false;
+		return $allowed;
 	}
 
 	public static function setClientCachingDays(Response $httpResponse, int $days) : void {
