@@ -75,7 +75,7 @@ class HttpUtil {
 			$redirect = ($status >= 300 && $status < 400 && $location !== null);
 			if ($redirect) {
 				if ($maxRedirects-- > 0) {
-					$url = $location;
+					$url = Util::urlToAbsolute($location, $url);
 				} else {
 					$redirect = false;
 					$headers['status_code'] = Http::STATUS_LOOP_DETECTED;

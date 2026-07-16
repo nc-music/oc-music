@@ -16,6 +16,7 @@
 
 ### Fixed
 - Vulnerability [GHSA-frmc-frvc-h5p6](https://github.com/nc-music/oc-music/security/advisories/GHSA-frmc-frvc-h5p6)
+- HTTP redirection not working (e.g. on radio streams) when the `Location` header contains a relative URL
 - Deprecation warnings printed on PHP 8.3+ while executing the Music background tasks
 - Web UI trying to load an invalid image URL upon page load
 - Some HLS-type radio streams not playing because URLs contained in `#EXT-X-*` headers were handled incorrectly

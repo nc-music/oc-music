@@ -209,26 +209,6 @@ class RadioService {
 		return $result;
 	}
 
-	private static function convertUrlOnPlaylistToAbsolute(string $containedUrl, string $playlistUrl) : string {
-		if (!StringUtil::startsWith($containedUrl, 'http://', true) && !StringUtil::startsWith($containedUrl, 'https://', true)) {
-			$urlParts = \parse_url($playlistUrl);
-
-			if ($containedUrl[0] == '/') {
-				// the contained URL is absolute to the server root => keep only the scheme and host from the playlist URL
-				$urlParts['path'] = $containedUrl;
-			} else {
-				// the contained URL is relative to the playlist URL => keep the path up to the last '/' and append the contained URL
-				$path = $urlParts['path'] ?? '/';
-				$lastSlash = \strrpos($path, '/');
-				$urlParts['path'] = \substr($path, 0, $lastSlash + 1) . $containedUrl;
-			}
-			unset($urlParts['query'], $urlParts['fragment']);
-
-			$containedUrl = Util::buildUrl($urlParts);
-		}
-		return $containedUrl;
-	}
-
 	/**
 	 * Sometimes the URL given as stream URL points to a playlist which in turn contains the actual
 	 * URL to be streamed. This function resolves such indirections.
@@ -269,7 +249,7 @@ class RadioService {
 					// in case the playlist contains multiple entries, the first ones are probably advertisements and the actual stream is the last one
 					$entryUrl = \end($entries)['path'];
 					// the path in the playlist may be relative => convert to absolute
-					$url = self::convertUrlOnPlaylistToAbsolute($entryUrl, $url);
+					$url = Util::urlToAbsolute($entryUrl, $url);
 
 					// make a recursive call, sometimes playlist may contain another playlist URL
 					['url' => $url, 'hls' => $isHls] = $this->resolveStreamUrl($url);
@@ -299,7 +279,7 @@ class RadioService {
 			while ($line = \fgets($fp)) {
 				$line = \trim($line);
 				if (!empty($line) && !StringUtil::startsWith($line, '#')) {
-					$segUrl = self::convertUrlOnPlaylistToAbsolute($line, $url);
+					$segUrl = Util::urlToAbsolute($line, $url);
 					$segToken = $this->tokenService->tokenForUrl($segUrl);
 					$line = $this->urlGenerator->linkToRoute(
 						'music.radioApi.hlsSegment',
@@ -307,7 +287,7 @@ class RadioService {
 					);
 				} elseif (\preg_match('/^#EXT-X-.+:URI="([^"]*)"/', $line, $matches) === 1) {
 					// also rewrite HLS headers containing URLs, such as the decryption key URL in #EXT-X-KEY
-					$segUrl = self::convertUrlOnPlaylistToAbsolute($matches[1], $url);
+					$segUrl = Util::urlToAbsolute($matches[1], $url);
 					$segToken = $this->tokenService->tokenForUrl($segUrl);
 					$line = \str_replace($matches[1], $this->urlGenerator->linkToRoute(
 						'music.radioApi.hlsSegment',

@@ -7,7 +7,7 @@
  * later. See the COPYING file.
  *
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
- * @copyright Pauli Järvinen 2018 - 2025
+ * @copyright Pauli Järvinen 2018 - 2026
  */
 
 namespace OCA\Music\Utility;
@@ -116,7 +116,30 @@ class Util {
 			. ($parts['path'] ?? '')
 			. (isset($parts['query']) ? "?{$parts['query']}" : '')
 			. (isset($parts['fragment']) ? "#{$parts['fragment']}" : '');
+	}
 
+	/**
+	 * Given a potentially relative target URL and the current URL, return the absolute URL to the target.
+	 * If the target URL is already absolute, it is returned as-is.
+	 */
+	public static function urlToAbsolute(string $targetUrl, string $currentUrl) : string {
+		if (\parse_url($targetUrl, PHP_URL_SCHEME) === null) {
+			$urlParts = \parse_url($currentUrl);
+
+			if ($targetUrl[0] == '/') {
+				// the target URL is absolute to the server root => keep only the scheme and host from the current URL
+				$urlParts['path'] = $targetUrl;
+			} else {
+				// the target URL is relative to the current URL => keep the path up to the last '/' and append the target URL
+				$path = $urlParts['path'] ?? '/';
+				$lastSlash = \strrpos($path, '/');
+				$urlParts['path'] = \substr($path, 0, $lastSlash + 1) . $targetUrl;
+			}
+			unset($urlParts['query'], $urlParts['fragment']);
+
+			$targetUrl = self::buildUrl($urlParts);
+		}
+		return $targetUrl;
 	}
 
 	/**
