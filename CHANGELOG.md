@@ -1,7 +1,7 @@
-## [Unreleased]
+## 2.6.0 - 2026-07-16
 
 ### Added
-- Support for ownCloud 11 (tested on 11.0.0-prealpha)
+- Support for ownCloud 11 (tested on 11.0.0-rc1)
 
 ### Changed
 - Subsonic API:

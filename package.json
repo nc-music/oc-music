@@ -1,7 +1,7 @@
 {
 	"name": "music",
 	"description": "Music player and server for ownCloud and Nextcloud",
-	"version": "2.5.2",
+	"version": "2.6.0",
 	"private": true,
 	"homepage": "https://github.com/nc-music/oc-music",
 	"repository": {
