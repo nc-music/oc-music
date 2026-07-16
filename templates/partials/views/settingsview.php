@@ -204,6 +204,10 @@
 			<span translate>Music</span> <span>v{{ settings.appVersion }}</span>
 			(<a href="https://github.com/nc-music/oc-music/releases" target="_blank" translate>version history</a>)
 		</p>
+		<a id="sponsor-link" href="https://github.com/sponsors/nc-music" target="_blank">
+			<span class="icon icon-heart"></span>
+			<span translate>Support the development of Music</span>
+		</a>
 		<p translate>
 			Please report any bugs and issues to the <a href="{{issueTrackerUrl}}" target="_blank">issue tracker</a>
 		</p>

@@ -5,7 +5,7 @@
  * later. See the COPYING file.
  *
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
- * @copyright Pauli Järvinen 2022 - 2025
+ * @copyright Pauli Järvinen 2022 - 2026
  */
 
 .app-music .icon-audio {
@@ -106,6 +106,10 @@
 
 .app-music .icon-filter {
 	background-image: url(../../img/filter.svg);
+}
+
+.app-music .icon-heart {
+	background-image: url(../../img/heart.svg);
 }
 
 /* The core does have style definitions for the starred icon but, at least on NC27, they use a css

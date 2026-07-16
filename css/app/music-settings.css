@@ -7,7 +7,7 @@
  * @author Morris Jobke <hey@morrisjobke.de>
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
  * @copyright Morris Jobke 2013, 2014
- * @copyright Pauli Järvinen 2018 - 2025
+ * @copyright Pauli Järvinen 2018 - 2026
  */
 
 .invisible {
@@ -229,4 +229,10 @@
 
 #music-user .dimmed {
 	opacity: .4;
+}
+
+#music-user #sponsor-link .icon {
+	display: inline-block;
+	background-size: contain;
+	vertical-align: center;
 }
