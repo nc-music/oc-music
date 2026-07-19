@@ -2,6 +2,7 @@
 
 ### Fixed
 - Negative offset being ignored when showing time-synced lyrics
+- Empty lines being hidden when viewing time-synced lyrics
 
 ## 2.6.0 - 2026-07-16
 
