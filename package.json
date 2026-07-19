@@ -56,9 +56,9 @@
 		"style-loader": "^2.0.0",
 		"ts-loader": "^9.4.4",
 		"typescript": "^5.0.0",
-		"webpack": "^5.88.1",
+		"webpack": "^5.108.4",
 		"webpack-assets-manifest": "^5.1.0",
-		"webpack-cli": "^7.0.2"
+		"webpack-cli": "^7.2.1"
 	},
 	"overrides": {
 		"restangular": {
