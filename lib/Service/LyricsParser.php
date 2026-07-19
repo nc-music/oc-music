@@ -7,7 +7,7 @@
  * later. See the COPYING file.
  *
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
- * @copyright Pauli Järvinen 2020 - 2025
+ * @copyright Pauli Järvinen 2020 - 2026
  */
 
 namespace OCA\Music\Service;
@@ -85,7 +85,7 @@ class LyricsParser {
 			// Extract timestamp tags and the offset tag and discard any other metadata tags.
 			$timestampMatches = [];
 			$offsetMatch = [];
-			if (\preg_match('/\[offset:(\d+)\]/', $tags, $offsetMatch)) {
+			if (\preg_match('/\[offset:(-?\d+)\]/', $tags, $offsetMatch)) {
 				$offset = \intval($offsetMatch[1]);
 			} elseif (\preg_match_all('/\[(\d\d:\d\d(\.\d\d)?)\]/', $tags, $timestampMatches)) {
 				// some timestamp(s) were found

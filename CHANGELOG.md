@@ -1,6 +1,7 @@
 ## [Unreleased]
 
 ### Fixed
+- Negative offset being ignored when showing time-synced lyrics
 
 ## 2.6.0 - 2026-07-16
 
