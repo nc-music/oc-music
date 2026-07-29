@@ -143,10 +143,11 @@ export class LibraryService {
 			const aProp : any = getSortProperty(a);
 			const bProp : any = getSortProperty(b);
 
-			if (aProp == null) {
-				return -1;
-			} else if (bProp == null) {
+			// sort missing properties after existing ones
+			if (!aProp) {
 				return 1;
+			} else if (!bProp) {
+				return -1;
 			} else {
 				return aProp.localeCompare(bProp, locale);
 			}

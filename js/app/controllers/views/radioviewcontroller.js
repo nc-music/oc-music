@@ -132,7 +132,7 @@ angular.module('Music').controller('RadioViewController', [
 		 */
 		$scope.getStationTitle = function(index) {
 			let station = $scope.stations[index].track;
-			return station.name || station.stream_url;
+			return station.name;
 		};
 		$scope.getStationElementId = function(index) {
 			return 'radio-station-' + $scope.stations[index].track.id;

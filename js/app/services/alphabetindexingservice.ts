@@ -5,7 +5,7 @@
  * later. See the COPYING file.
  *
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
- * @copyright 2020 - 2023 Pauli Järvinen
+ * @copyright 2020 - 2026 Pauli Järvinen
  *
  */
 
@@ -27,9 +27,12 @@ angular.module('Music').service('alphabetIndexingService', [function() {
 		},
 
 		titlePrecedesIndexCharAt(title : string, charIdx : number) : boolean {
-			// Special case: '…' is considered to be larger than Z or any of its variants
-			// but equal to any other character greater than Z
-			if (_indexChars[charIdx] === '…') {
+			if (!title) {
+				// missing title is sorted after everything else
+				return false;
+			} else if (_indexChars[charIdx] === '…') {
+				// Special case: '…' is considered to be larger than Z or any of its variants
+				// but equal to any other character greater than Z
 				return _isVariantOfZ(title.slice(0, 1)) || this.titlePrecedesIndexCharAt(title, charIdx-1);
 			} else {
 				return title.localeCompare(_indexChars[charIdx], OCA.Music.Utils.getLocale()) < 0;
