@@ -1,3 +1,7 @@
+## [Unreleased]
+
+### Fixed
+
 ## 2.6.0 - 2026-07-16
 
 ### Added
