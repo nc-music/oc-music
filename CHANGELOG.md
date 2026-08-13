@@ -4,6 +4,8 @@
 - Negative offset being ignored when showing time-synced lyrics
 - Empty lines being hidden when viewing time-synced lyrics
 - Alphabet navigation working wrong in the Internet radio view when some station is unnamed (such stations are now listed as last)
+- Performance problem on background cleanup task with huge libraries
+  [nc-music#157](https://github.com/nc-music/music/issues/157)
 
 ## 2.6.0 - 2026-07-16
 

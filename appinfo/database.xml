@@ -333,6 +333,12 @@
 				</field>
 			</index>
 			<index>
+				<name>music_tracks_genre_id_idx</name>
+				<field>
+					<name>genre_id</name>
+				</field>
+			</index>
+			<index>
 				<name>music_tracks_user_id_idx</name>
 				<field>
 					<name>user_id</name>
