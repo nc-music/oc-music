@@ -129,6 +129,40 @@ class ArrayUtil {
 	}
 
 	/**
+	 * Replacement for \array_all which is available only in PHP 8.4 and later
+	 *
+	 * @template K Array key
+	 * @template V Array value
+	 * @phpstan-param array<K,V> $array
+	 * @phpstan-param callable(V,K):bool $predicate
+	 */
+	public static function all(array $array, callable $predicate) : bool {
+		foreach ($array as $k => $v) {
+			if (!$predicate($v, $k)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Replacement for \array_any which is available only in PHP 8.4 and later
+	 *
+	 * @template K Array key
+	 * @template V Array value
+	 * @phpstan-param array<K,V> $array
+	 * @phpstan-param callable(V,K):bool $predicate
+	 */
+	public static function any(array $array, callable $predicate) : bool {
+		foreach ($array as $k => $v) {
+			if ($predicate($v, $k)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Get multiple items from @a $array, as indicated by a second array @a $keys.
 	 * If @a $preserveKeys is given as true, the result will have the original keys, otherwise
 	 * the result is re-indexed with keys 0, 1, 2, ...
