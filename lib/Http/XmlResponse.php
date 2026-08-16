@@ -101,6 +101,7 @@ class XmlResponse extends Response {
 		}
 
 		if (\is_string($value)) {
+			$value = \preg_replace('/[^\PC\s]/u', '', $value); // purge control characters expect for the whitespace
 			if ($key == $this->textNodeKey) {
 				$parentElem->appendChild($this->doc->createTextNode($value));
 			} elseif ($allowAttribute && $this->keyMayDefineAttribute($key)) {
