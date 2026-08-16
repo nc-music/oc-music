@@ -4,7 +4,7 @@
     "license": "AGPL-3.0-or-later",
     "require-dev": {
         "behat/behat": "~3.0",
-        "guzzlehttp/guzzle": "~7.0",
+        "guzzlehttp/guzzle": "~8.0",
         "owncloud/coding-standard": "^5.0",
         "phpstan/phpstan": "^2.0",
         "nextcloud/ocp": "^20.0.0",
