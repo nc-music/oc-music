@@ -74,7 +74,10 @@ class CoverApiController extends Controller {
 	 * @NoCSRFRequired
 	 */
 	public function externalCover(?string $url) : Response {
-		$allowedDomains = ['lastfm.freetls.fastly.net']; // domain used by Last.fm for the album art
+		$allowedDomains = [
+			'lastfm-img.freetls.fastly.net', // domain used by Last.fm for the album art
+			'lastfm.freetls.fastly.net',     // domain previously used by Last.fm, retained just in case it will be used also in the future
+		];
 
 		if (empty($url)) {
 			return new ErrorResponse(Http::STATUS_BAD_REQUEST, 'Required argument "url" missing');

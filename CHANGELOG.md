@@ -6,6 +6,7 @@
 - Alphabet navigation working wrong in the Internet radio view when some station is unnamed (such stations are now listed as last)
 - Performance problem on background cleanup task with huge libraries
   [nc-music#157](https://github.com/nc-music/music/issues/157)
+- Album covers from Last.fm not showing up in the details pane since Last.fm changed the sub domain hosting the images
 
 ## 2.6.0 - 2026-07-16
 
