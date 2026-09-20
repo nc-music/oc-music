@@ -41,6 +41,10 @@
 		<!-- update metadata cache when create/update/delete a file -->
 		<filesystem/>
 	</types>
+	<background-jobs>
+		<job>OCA\Music\BackgroundJob\Cleanup</job>
+		<job>OCA\Music\BackgroundJob\PodcastUpdateCheck</job>
+	</background-jobs>
 	<repair-steps>
 		<pre-migration>
 			<step>OCA\Music\Migration\PreMigration</step>
