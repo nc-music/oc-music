@@ -271,7 +271,7 @@ class AlbumBusinessLayer extends BusinessLayer {
 			$artistIdsByAlbum = $this->mapper->getPerformingArtistsByAlbumId($albumIds, $userId);
 			$artistIdsFlat = \array_merge([], ...$artistIdsByAlbum);
 			$artistIdsFlat = ArrayUtil::unique($artistIdsFlat);
-			$artists = $this->artistMapper->findById($artistIdsFlat, $userId);
+			$artists = empty($artistIdsFlat) ? [] : $this->artistMapper->findById($artistIdsFlat, $userId);
 			$artists = ArrayUtil::createIdLookupTable($artists);
 
 			$years = $this->mapper->getYearsByAlbumId($albumIds, $userId);

@@ -4,6 +4,10 @@
 - Update the GetID3 library to the release version 1.9.28-202610301738
   [nc-music#175](https://github.com/nc-music/music/issues/175)
 
+### Fixed
+- Subsonic API: HTTP error 500 when trying to open an album containing no tracks
+  [nc-music#169](https://github.com/nc-music/music/issues/169)
+
 ## 2.6.1 - 2026-08-30
 
 ### Fixed
