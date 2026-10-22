@@ -87,10 +87,11 @@ function ($scope, $rootScope, playQueueService, Audio, gettextCatalog, Restangul
 			$rootScope.$emit('playerProgress', currentTime);
 
 			// Gapless jump to the next track when the playback is very close to the end of a local track
-			if ($scope.player.getDuration() > 0 && $scope.currentTrack.type === 'song' && $scope.repeat !== 'one') {
+			const playingLocalTrack = ($scope.currentTrack.type === 'song');
+			if (playingLocalTrack && $scope.player.getDuration() > 0 && $scope.repeat !== 'one') {
 				let timeLeft = $scope.player.getDuration() - currentTime;
 				if (timeLeft < GAPLESS_PLAY_OVERLAP_MS) {
-					let nextTrackId = playQueueService.peekNextTrack()?.track?.id;
+					let nextTrackId = playQueueService.peekNextTrack()?.track?.id ?? null;
 					if (nextTrackId !== null) {
 						onEnd();
 					}
@@ -98,7 +99,7 @@ function ($scope, $rootScope, playQueueService, Audio, gettextCatalog, Restangul
 			}
 
 			// Periodically refresh the "now playing" information. Last.fm seems to forget the information after 4 minutes.
-			if ($scope.currentTrack.type === 'song' && nowPlayingLatestUpdateTime !== null && Date.now() - nowPlayingLatestUpdateTime >= NOW_PLAYING_UPDATE_INTERVAL_MS) {
+			if (playingLocalTrack && nowPlayingLatestUpdateTime !== null && Date.now() - nowPlayingLatestUpdateTime >= NOW_PLAYING_UPDATE_INTERVAL_MS) {
 				publishNowPlaying();
 			}
 		}
@@ -624,8 +625,12 @@ function ($scope, $rootScope, playQueueService, Audio, gettextCatalog, Restangul
 			|| $scope.currentTrack?.metadata?.title || $scope.currentTrack?.stream_url;
 	};
 
-	$scope.coverArt = function() {
-		return $scope.currentTrack?.album?.cover ?? $scope.currentTrack?.channel?.image ?? null;
+	$scope.coverArtUrl = function() {
+		let url = $scope.currentTrack?.album?.cover ?? $scope.currentTrack?.channel?.image ?? null;
+		if (url && coverArtToken) {
+			url += (url.indexOf('?') === -1 ? '?' : '&') + 'coverToken=' + coverArtToken;
+		}
+		return url;
 	};
 
 	$scope.coverArtTitle = function() {
@@ -722,7 +727,7 @@ function ($scope, $rootScope, playQueueService, Audio, gettextCatalog, Restangul
 					title: track.title,
 					artist: track?.artist?.name,
 					album: track?.album?.name ?? track?.channel?.title,
-					cover: $scope.coverArt() + (coverArtToken ? ('?coverToken=' + coverArtToken) : ''),
+					cover: $scope.coverArtUrl() ?? undefined,
 				});
 			}
 		}
@@ -746,9 +751,7 @@ function ($scope, $rootScope, playQueueService, Audio, gettextCatalog, Restangul
 			let args = {
 				silent: true,
 				body: $scope.secondaryTitle() + '\n' + (track?.album?.name ?? ''),
-				icon: (track?.type === 'radio')
-					? radioIconPath
-					: $scope.coverArt() + (coverArtToken ? ('?coverToken=' + coverArtToken) : '')
+				icon: (track?.type === 'radio') ? radioIconPath : $scope.coverArtUrl() ?? undefined
 			};
 			notification = new Notification($scope.primaryTitle(), args);
 			notification.onclick = $scope.scrollToCurrentTrack;

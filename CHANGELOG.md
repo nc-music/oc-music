@@ -7,6 +7,8 @@
 ### Fixed
 - Subsonic API: HTTP error 500 when trying to open an album containing no tracks
   [nc-music#169](https://github.com/nc-music/music/issues/169)
+- A few benign javascript errors emitting errors to the browser console
+  [nc-music#181](https://github.com/nc-music/music/issues/181)
 
 ## 2.6.1 - 2026-08-30
 

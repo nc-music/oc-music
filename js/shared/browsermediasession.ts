@@ -5,7 +5,7 @@
  * later. See the COPYING file.
  *
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
- * @copyright Pauli Järvinen 2024
+ * @copyright Pauli Järvinen 2024 - 2026
  */
 
 import { PlayerWrapper } from "./playerwrapper";
@@ -52,6 +52,7 @@ export class BrowserMediaSession {
 			if ('setPositionState' in navigator.mediaSession) {
 				player.on('progress', (position : number) => {
 					const duration = player.getDuration();
+					position = Math.max(0, Math.min(position, duration)); // position is sometimes slightly more than duration, which would cause an exception in setPositionState
 					if (Number.isFinite(duration)) {
 						navigator.mediaSession.setPositionState({
 							duration: duration / 1000,
@@ -89,10 +90,10 @@ export class BrowserMediaSession {
 				title: info.title ?? undefined,
 				artist: info.artist ?? undefined,
 				album: info.album ?? undefined,
-				artwork: [{
-					src: info.cover ?? '',
+				artwork: info.cover ? [{
+					src: info.cover,
 					type: info.coverMime ?? undefined
-				}]
+				}] : undefined
 			});
 		}
 	}
