@@ -9,6 +9,7 @@
   [nc-music#169](https://github.com/nc-music/music/issues/169)
 - A few benign javascript errors emitting errors to the browser console
   [nc-music#181](https://github.com/nc-music/music/issues/181)
+- Search not working in the playlist view when the list contains any broken track references
 
 ## 2.6.1 - 2026-08-30
 

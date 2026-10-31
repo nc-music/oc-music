@@ -349,7 +349,7 @@ export class LibraryService {
 		return _.every(subStrings, (subStr) => {
 			return _.some(getFieldValueFuncs, (getter) => {
 				let value = getter(object);
-				return (value !== null && this.#foldString(value).indexOf(subStr) !== -1);
+				return (this.#foldString(value ?? '').indexOf(subStr) !== -1);
 			});
 		});
 	}
