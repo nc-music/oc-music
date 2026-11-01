@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Changed
+- Update the GetID3 library to the release version 1.9.28-202610301738
+  [nc-music#175](https://github.com/nc-music/music/issues/175)
+
 ## 2.6.1 - 2026-08-30
 
 ### Fixed
