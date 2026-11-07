@@ -14,6 +14,7 @@
 - Subsonic API: XML format of `getArtistInfo` and `getArtistInfo2` using child elements for OpenSubsonic fields while attributes made more sense
 - Subsonic API: JSON format of `getArtistInfo` and `getArtistInfo2` rendering `largeImageUrl` incorrectly as an array instead of string
   @trajano
+- Vulnerability [GHSA-c8wj-8p5h-r9g8](https://github.com/nc-music/oc-music/security/advisories/GHSA-c8wj-8p5h-r9g8)
 
 ## 2.6.1 - 2026-08-30
 

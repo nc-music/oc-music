@@ -7,7 +7,7 @@
  * later. See the COPYING file.
  *
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
- * @copyright Pauli Järvinen 2018 - 2025
+ * @copyright Pauli Järvinen 2018 - 2026
  */
 
 namespace OCA\Music\Controller;
@@ -70,6 +70,9 @@ class ShareController extends Controller {
 				$fileId = $share->getNodeId();
 			} else {
 				$folder = $this->getSharedFolder($token);
+				if (empty($folder->getById($fileId))) {
+					return new ErrorResponse(Http::STATUS_NOT_FOUND, 'no such file under the share');
+				}
 			}
 
 			$info = $this->scanner->getFileInfo($fileId, $shareOwner, $folder);
