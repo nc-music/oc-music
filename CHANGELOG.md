@@ -1,5 +1,4 @@
-## [Unreleased]
-
+## 2.6.2 - 2026-11-08
 
 ### Changed
 - Update the GetID3 library to the release version 1.9.28-202610301738
