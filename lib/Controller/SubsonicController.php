@@ -1796,8 +1796,8 @@ class SubsonicController extends ApiController {
 		}
 
 		// This method is unusual in how it uses non-attribute elements in the response. On the other hand,
-		// all the details of the <similarArtist> elements are rendered as attributes. List those separately.
-		$attributeKeys = ['name', 'id', 'albumCount', 'coverArt', 'artistImageUrl', 'starred'];
+		// all the details of the <similarArtist> elements are rendered as attributes.
+		$attributeKeys = ['similarArtist.*'];
 
 		return $this->subsonicResponse([$rootName => $content], $attributeKeys);
 	}
@@ -2028,7 +2028,7 @@ class SubsonicController extends ApiController {
 			$response->addHeader('Content-Type', 'text/javascript; charset=UTF-8');
 		} else {
 			if (\is_array($useAttributes)) {
-				$useAttributes = \array_merge($useAttributes, ['status', 'version', 'type', 'serverVersion', 'openSubsonic', 'xmlns']);
+				$useAttributes[] = 'subsonic-response.*';
 			}
 			$responseData['subsonic-response']['xmlns'] = 'http://subsonic.org/restapi';
 			$response = new XmlResponse($responseData, $useAttributes);

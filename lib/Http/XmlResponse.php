@@ -7,11 +7,12 @@
  * later. See the COPYING file.
  *
  * @author Pauli Järvinen <pauli.jarvinen@gmail.com>
- * @copyright Pauli Järvinen 2019 - 2025
+ * @copyright Pauli Järvinen 2019 - 2026
  */
 
 namespace OCA\Music\Http;
 
+use OCA\Music\Utility\ArrayUtil;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\Response;
 
@@ -38,9 +39,10 @@ class XmlResponse extends Response {
 
 	/**
 	 * @param array $content
-	 * @param bool|string[] $attributes If true, then key-value pair is made into attribute if possible.
-	 *                                  If false, then key-value pairs are never made into attributes.
-	 *                                  If an array, then keys found from the array are made into attributes if possible.
+	 * @param bool|string[] $attributeKeys If true, then key-value pair is made into attribute if possible.
+	 *                                     If false, then key-value pairs are never made into attributes.
+	 *                                     If an array, then keys found from the array are made into attributes if possible;
+	 *                                     this supports also a syntax like "parentElement.key" or "parentElement.*".
 	 * @param bool $boolAsInt If true, any boolean values are yielded as int 0/1.
 	 *                        If false, any boolean values are yielded as string "false"/"true".
 	 * @param bool $nullAsEmpty If true, any null values are converted to empty strings, and the result has an empty element or attribute.
@@ -48,7 +50,7 @@ class XmlResponse extends Response {
 	 * @param ?string $textNodeKey When a key within @a $content matches this, the corresponding value is converted to a text node,
 	 *                             instead of creating an element or attribute named by the key.
 	 */
-	public function __construct(array $content, /*mixed*/ $attributes=true,
+	public function __construct(array $content, /*mixed*/ $attributeKeys=true,
 								bool $boolAsInt=false, bool $nullAsEmpty=false,
 								?string $textNodeKey='value') {
 		$this->setStatus(Http::STATUS_OK);
@@ -61,7 +63,7 @@ class XmlResponse extends Response {
 		$this->content = $content;
 		$this->doc = new \DOMDocument('1.0', 'UTF-8');
 		$this->doc->formatOutput = true;
-		$this->attributeKeys = $attributes;
+		$this->attributeKeys = $attributeKeys;
 		$this->boolAsInt = $boolAsInt;
 		$this->nullAsEmpty = $nullAsEmpty;
 		$this->textNodeKey = $textNodeKey;
@@ -104,7 +106,7 @@ class XmlResponse extends Response {
 			$value = \preg_replace('/[^\PC\s]/u', '', $value); // purge control characters expect for the whitespace
 			if ($key == $this->textNodeKey) {
 				$parentElem->appendChild($this->doc->createTextNode($value));
-			} elseif ($allowAttribute && $this->keyMayDefineAttribute($key)) {
+			} elseif ($allowAttribute && $this->keyMayDefineAttribute($key, $parentElem->tagName)) {
 				$parentElem->setAttribute($key, $value);
 			} else {
 				$child = $this->doc->createElement($key);
@@ -134,9 +136,9 @@ class XmlResponse extends Response {
 		}
 	}
 
-	private function keyMayDefineAttribute(string $key) : bool {
+	private function keyMayDefineAttribute(string $key, string $parentElem) : bool {
 		if (\is_array($this->attributeKeys)) {
-			return \in_array($key, $this->attributeKeys);
+			return ArrayUtil::any($this->attributeKeys, fn ($k) => \in_array($k, [$key, "$parentElem.$key", "$parentElem.*"]));
 		} else {
 			return \boolval($this->attributeKeys);
 		}

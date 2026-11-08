@@ -1,5 +1,6 @@
 ## [Unreleased]
 
+
 ### Changed
 - Update the GetID3 library to the release version 1.9.28-202610301738
   [nc-music#175](https://github.com/nc-music/music/issues/175)
@@ -10,6 +11,7 @@
 - A few benign javascript errors emitting errors to the browser console
   [nc-music#181](https://github.com/nc-music/music/issues/181)
 - Search not working in the playlist view when the list contains any broken track references
+- Subsonic API: XML format of `getArtistInfo` and `getArtistInfo2` using child elements for OpenSubsonic fields while attributes made more sense
 
 ## 2.6.1 - 2026-08-30
 
