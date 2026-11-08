@@ -1786,7 +1786,7 @@ class SubsonicController extends ApiController {
 
 			$artist = $this->artistBusinessLayer->find($artistId, $userId);
 			if ($artist->getCoverFileId() !== null) {
-				$content['largeImageUrl'] = [$this->artistImageUrl($artistId)];
+				$content['largeImageUrl'] = $this->artistImageUrl($artistId);
 			}
 		}
 
